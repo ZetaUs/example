@@ -131,4 +131,44 @@
     btnReg.onclick = async function() {
       const email = regEmail.value.trim();
       const pwd = regPwd.value.trim();
-      const pwd2 = 
+      const pwd2 = regPwd2.value.trim();
+      regTip.className = 'tip err';
+
+      if (!isEmail(email)) {
+        regTip.innerText = '邮箱格式不正确，请重新输入';
+        return;
+      }
+      if (!pwd || !pwd2) {
+        regTip.innerText = '请完整填写密码和确认密码';
+        return;
+      }
+      if (pwd !== pwd2) {
+        regTip.innerText = '两次密码输入不一致，请核对';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json;charset=utf-8' },
+          body: JSON.stringify({ email, password: pwd }),
+          mode: 'cors',
+          cache: 'no-cache',
+          credentials: 'omit'
+        });
+        const data = await res.json();
+        if (data.success) {
+          regTip.className = 'tip ok';
+          regTip.innerText = '注册成功，正在返回官网...';
+          setTimeout(() => window.location.href = HOME_URL, 1000);
+        } else {
+          regTip.innerText = data.msg || '该邮箱已被注册';
+        }
+      } catch (e) {
+        regTip.innerText = '接口正常，检查输入哦';
+      }
+    };
+  });
+</script>
+</body>
+</html>
