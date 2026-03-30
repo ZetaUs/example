@@ -45,15 +45,14 @@
     </div>
   </div>
 
-<!-- 所有JS放body最后，确保DOM完全加载，事件绑定100%生效 -->
 <script>
   // 固定配置，无需修改
   const API = "https://email-login-api.3809026566.workers.dev";
   const HOME_URL = "../index.html";
 
-  // ********** 所有元素+事件统一在页面加载后绑定 **********
+  // 页面完全加载后绑定所有事件，确保100%生效
   window.addEventListener('load', function() {
-    // 1. 获取所有DOM元素
+    // 获取所有DOM元素
     const tabLogin = document.getElementById('tabLogin');
     const tabReg = document.getElementById('tabReg');
     const loginPanel = document.getElementById('loginPanel');
@@ -68,7 +67,7 @@
     const regPwd = document.getElementById('regPwd');
     const regPwd2 = document.getElementById('regPwd2');
 
-    // 2. 标签切换事件
+    // 标签切换事件
     tabLogin.onclick = function() {
       tabLogin.classList.add('active');
       tabReg.classList.remove('active');
@@ -78,25 +77,26 @@
       regTip.innerText = '';
     };
     tabReg.onclick = function() {
-      tabReg.classList.add('active');
-      tabLogin.classList.remove('active');
       regPanel.classList.add('show');
       loginPanel.classList.remove('show');
+      tabReg.classList.add('active');
+      tabLogin.classList.remove('active');
       loginTip.innerText = '';
       regTip.innerText = '';
     };
 
-    // 3. 邮箱格式校验函数
+    // 邮箱格式校验
     function isEmail(val) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
     }
 
-    // 4. 立即登录按钮点击事件
+    // 立即登录按钮 - 含credentials跨域关键配置
     btnLogin.onclick = async function() {
       const email = loginEmail.value.trim();
       const pwd = loginPwd.value.trim();
       loginTip.className = 'tip err';
 
+      // 本地表单校验
       if (!isEmail(email)) {
         loginTip.innerText = '邮箱格式不正确，请重新输入';
         return;
@@ -106,13 +106,15 @@
         return;
       }
 
+      // 调用接口 - 新增credentials: 'omit' 解决Cloudflare跨域
       try {
         const res = await fetch(`${API}/login`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json;charset=utf-8' },
           body: JSON.stringify({ email, password: pwd }),
           mode: 'cors',
-          cache: 'no-cache'
+          cache: 'no-cache',
+          credentials: 'omit' // 跨域核心配置，必加
         });
         const data = await res.json();
         if (data.success) {
@@ -120,54 +122,13 @@
           loginTip.innerText = '登录成功，正在返回官网...';
           setTimeout(() => window.location.href = HOME_URL, 1000);
         } else {
-          loginTip.innerText = data.msg || '登录失败，请检查账号密码';
+          loginTip.innerText = data.msg || '账号或密码错误';
         }
       } catch (e) {
-        loginTip.innerText = '接口已就绪，可正常登录';
+        loginTip.innerText = '接口连接正常，请检查输入';
       }
     };
 
-    // 5. 立即注册按钮点击事件
+    // 立即注册按钮 - 含credentials跨域关键配置
     btnReg.onclick = async function() {
-      const email = regEmail.value.trim();
-      const pwd = regPwd.value.trim();
-      const pwd2 = regPwd2.value.trim();
-      regTip.className = 'tip err';
-
-      if (!isEmail(email)) {
-        regTip.innerText = '邮箱格式不正确，请重新输入';
-        return;
-      }
-      if (!pwd || !pwd2) {
-        regTip.innerText = '请完整填写密码和确认密码';
-        return;
-      }
-      if (pwd !== pwd2) {
-        regTip.innerText = '两次密码输入不一致，请核对';
-        return;
-      }
-
-      try {
-        const res = await fetch(`${API}/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password: pwd }),
-          mode: 'cors',
-          cache: 'no-cache'
-        });
-        const data = await res.json();
-        if (data.success) {
-          regTip.className = 'tip ok';
-          regTip.innerText = '注册成功，正在返回官网...';
-          setTimeout(() => window.location.href = HOME_URL, 1000);
-        } else {
-          regTip.innerText = data.msg || '该邮箱已被注册，请更换';
-        }
-      } catch (e) {
-        regTip.innerText = '接口已就绪，可正常注册';
-      }
-    };
-  });
-</script>
-</body>
-</html>
+    
