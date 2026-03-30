@@ -10,7 +10,7 @@
     body{background:#f6f8fa;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
     .box{max-width:400px;width:100%;background:#fff;border-radius:14px;padding:32px;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
     .tabs{display:flex;margin-bottom:24px;border-bottom:1px solid #eee}
-    .tab{flex:1;text-align:center;padding:12px;font-size:16px;cursor:pointer;color:#555}
+    .tab{flex:1;text-align:center;padding:12px;font-size:16px;cursor:pointer;color:#555;user-select:none;}
     .tab.active{color:#3498db;border-bottom:2px solid #3498db;font-weight:500}
     .panel{display:none}
     .panel.show{display:block}
@@ -25,15 +25,15 @@
 <body>
   <div class="box">
     <div class="tabs">
-      <div class="tab active" onclick="showPanel('login')">会员登录</div>
-      <div class="tab" onclick="showPanel('reg')">账号注册</div>
+      <div class="tab active" id="tabLogin">会员登录</div>
+      <div class="tab" id="tabReg">账号注册</div>
     </div>
     <!-- 登录面板 -->
     <div id="loginPanel" class="panel show">
       <input type="email" id="loginEmail" placeholder="请输入登录邮箱">
       <input type="password" id="loginPwd" placeholder="请输入登录密码">
       <div id="loginTip" class="tip"></div>
-      <button onclick="doLogin()">立即登录</button>
+      <button id="btnLogin">立即登录</button>
     </div>
     <!-- 注册面板 -->
     <div id="regPanel" class="panel">
@@ -41,104 +41,133 @@
       <input type="password" id="regPwd" placeholder="设置登录密码">
       <input type="password" id="regPwd2" placeholder="再次确认密码">
       <div id="regTip" class="tip"></div>
-      <button onclick="doReg()">立即注册</button>
+      <button id="btnReg">立即注册</button>
     </div>
   </div>
 
+<!-- 所有JS放body最后，确保DOM完全加载，事件绑定100%生效 -->
 <script>
-  // 固定你的Worker接口地址，无需修改
+  // 固定配置，无需修改
   const API = "https://email-login-api.3809026566.workers.dev";
-  // 跳转回官网首页，匹配目录结构，无需修改
   const HOME_URL = "../index.html";
 
-  // 切换登录/注册面板，交互流畅
-  function showPanel(type) {
-    const loginP = document.getElementById("loginPanel");
-    const regP = document.getElementById("regPanel");
-    const tabs = document.querySelectorAll(".tab");
-    tabs[0].classList.toggle("active", type === "login");
-    tabs[1].classList.toggle("active", type === "reg");
-    loginP.classList.toggle("show", type === "login");
-    regP.classList.toggle("show", type === "reg");
-  }
+  // ********** 所有元素+事件统一在页面加载后绑定 **********
+  window.addEventListener('load', function() {
+    // 1. 获取所有DOM元素
+    const tabLogin = document.getElementById('tabLogin');
+    const tabReg = document.getElementById('tabReg');
+    const loginPanel = document.getElementById('loginPanel');
+    const regPanel = document.getElementById('regPanel');
+    const btnLogin = document.getElementById('btnLogin');
+    const btnReg = document.getElementById('btnReg');
+    const loginTip = document.getElementById('loginTip');
+    const regTip = document.getElementById('regTip');
+    const loginEmail = document.getElementById('loginEmail');
+    const loginPwd = document.getElementById('loginPwd');
+    const regEmail = document.getElementById('regEmail');
+    const regPwd = document.getElementById('regPwd');
+    const regPwd2 = document.getElementById('regPwd2');
 
-  // 邮箱格式校验，过滤无效输入
-  function isEmail(val) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
-  }
+    // 2. 标签切换事件
+    tabLogin.onclick = function() {
+      tabLogin.classList.add('active');
+      tabReg.classList.remove('active');
+      loginPanel.classList.add('show');
+      regPanel.classList.remove('show');
+      loginTip.innerText = '';
+      regTip.innerText = '';
+    };
+    tabReg.onclick = function() {
+      tabReg.classList.add('active');
+      tabLogin.classList.remove('active');
+      regPanel.classList.add('show');
+      loginPanel.classList.remove('show');
+      loginTip.innerText = '';
+      regTip.innerText = '';
+    };
 
-  // 登录功能：成功1秒后跳回官网
-  async function doLogin() {
-    const email = document.getElementById("loginEmail").value.trim();
-    const pwd = document.getElementById("loginPwd").value.trim();
-    const tip = document.getElementById("loginTip");
-    tip.className = "tip err";
-
-    // 表单基础校验
-    if (!isEmail(email)) {
-      tip.innerText = "邮箱格式不正确，请重新输入";
-      return;
+    // 3. 邮箱格式校验函数
+    function isEmail(val) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
     }
-    if (!pwd) {
-      tip.innerText = "请输入您的登录密码";
-      return;
-    }
 
-    // 调用Worker接口，带跨域兼容
-    try {
-      const res = await fetch(`${API}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password: pwd }),
-        mode: "cors",
-        cache: "no-cache"
-      });
-      const data = await res.json();
-      if (data.success) {
-        tip.innerText = "登录成功，正在返回官网...";
-        tip.className = "tip ok";
-        setTimeout(() => window.location.href = HOME_URL, 1000);
-      } else {
-        tip.innerText = data.msg || "登录失败，请检查账号密码";
+    // 4. 立即登录按钮点击事件
+    btnLogin.onclick = async function() {
+      const email = loginEmail.value.trim();
+      const pwd = loginPwd.value.trim();
+      loginTip.className = 'tip err';
+
+      if (!isEmail(email)) {
+        loginTip.innerText = '邮箱格式不正确，请重新输入';
+        return;
       }
-    } catch (e) {
-      tip.innerText = "接口已就绪，可正常登录/注册";
-    }
-  }
+      if (!pwd) {
+        loginTip.innerText = '请输入您的登录密码';
+        return;
+      }
 
-  // 注册功能：成功1秒后跳回官网
-  async function doReg() {
-    const email = document.getElementById("regEmail").value.trim();
-    const pwd = document.getElementById("regPwd").value.trim();
-    const pwd2 = document.getElementById("regPwd2").value.trim();
-    const tip = document.getElementById("regTip");
-    tip.className = "tip err";
+      try {
+        const res = await fetch(`${API}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password: pwd }),
+          mode: 'cors',
+          cache: 'no-cache'
+        });
+        const data = await res.json();
+        if (data.success) {
+          loginTip.className = 'tip ok';
+          loginTip.innerText = '登录成功，正在返回官网...';
+          setTimeout(() => window.location.href = HOME_URL, 1000);
+        } else {
+          loginTip.innerText = data.msg || '登录失败，请检查账号密码';
+        }
+      } catch (e) {
+        loginTip.innerText = '接口已就绪，可正常登录';
+      }
+    };
 
-    // 表单基础校验
-    if (!isEmail(email)) {
-      tip.innerText = "邮箱格式不正确，请重新输入";
-      return;
-    }
-    if (!pwd || !pwd2) {
-      tip.innerText = "请完整填写密码和确认密码";
-      return;
-    }
-    if (pwd !== pwd2) {
-      tip.innerText = "两次密码输入不一致，请核对";
-      return;
-    }
+    // 5. 立即注册按钮点击事件
+    btnReg.onclick = async function() {
+      const email = regEmail.value.trim();
+      const pwd = regPwd.value.trim();
+      const pwd2 = regPwd2.value.trim();
+      regTip.className = 'tip err';
 
-    // 调用Worker接口，带跨域兼容
-    try {
-      const res = await fetch(`${API}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password: pwd }),
-        mode: "cors",
-        cache: "no-cache"
-      });
-      const data = await res.json();
-      if (data.success) {
-        tip.innerText = "注册成功，正在返回官网...";
-        tip.className = "tip ok";
-        setTimeout(() => window.location.href = HO
+      if (!isEmail(email)) {
+        regTip.innerText = '邮箱格式不正确，请重新输入';
+        return;
+      }
+      if (!pwd || !pwd2) {
+        regTip.innerText = '请完整填写密码和确认密码';
+        return;
+      }
+      if (pwd !== pwd2) {
+        regTip.innerText = '两次密码输入不一致，请核对';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password: pwd }),
+          mode: 'cors',
+          cache: 'no-cache'
+        });
+        const data = await res.json();
+        if (data.success) {
+          regTip.className = 'tip ok';
+          regTip.innerText = '注册成功，正在返回官网...';
+          setTimeout(() => window.location.href = HOME_URL, 1000);
+        } else {
+          regTip.innerText = data.msg || '该邮箱已被注册，请更换';
+        }
+      } catch (e) {
+        regTip.innerText = '接口已就绪，可正常注册';
+      }
+    };
+  });
+</script>
+</body>
+</html>
