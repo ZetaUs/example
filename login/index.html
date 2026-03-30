@@ -3,143 +3,572 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>登录</title>
+  <title>会员登录与注册</title>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui, -apple-system, sans-serif}
-    body{background:#f6f8fa;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
-    .box{max-width:400px;width:100%;background:#fff;border-radius:14px;padding:32px;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
-    .tabs{display:flex;margin-bottom:24px;border-bottom:1px solid #eee}
-    .tab{flex:1;text-align:center;padding:12px;font-size:16px;cursor:pointer;color:#555;user-select:none}
-    .tab.active{color:#0071e3;border-bottom:2px solid #0071e3;font-weight:500}
-    .panel{display:none}
-    .panel.show{display:block}
-    input{width:100%;height:48px;padding:0 16px;margin-bottom:16px;border:1px solid #ddd;border-radius:10px;font-size:15px}
-    button{width:100%;height:48px;background:#0071e3;color:#fff;border:none;border-radius:10px;font-size:16px;cursor:pointer}
-    .tip{font-size:14px;margin:-8px 0 12px;color:#ff3b30}
-    .tip.ok{color:#34c759}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    }
+
+    body {
+      background: #f6f8fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .box {
+      width: 100%;
+      background: #fff;
+      border-radius: 14px;
+      padding: 32px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      color: #555;
+      user-select: none;
+      background: none;
+      border: none;
+    }
+
+    .tab.active {
+      color: #0071e3;
+      border-bottom: 2px solid #0071e3;
+      font-weight: 500;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.show {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      height: 48px;
+      padding: 0 16px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 15px;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #0071e3;
+    }
+
+    input.error {
+      border-color: #ff3b30;
+    }
+
+    .tip {
+      font-size: 14px;
+      margin: -8px 0 12px;
+      min-height: 20px;
+      line-height: 1.4;
+    }
+
+    .tip.error {
+      color: #ff3b30;
+    }
+
+    .tip.success {
+      color: #34c759;
+    }
+
+    button {
+      width: 100%;
+      height: 48px;
+      background: #0071e3;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    button:disabled,
+    button.loading {
+      background-color: #a0c8f0;
+      cursor: not-allowed;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
   </style>
 </head>
 <body>
-  <div class="box">
-    <div class="tabs">
-      <div class="tab active" id="tabLogin">会员登录</div>
-      <div class="tab" id="tabReg">账号注册</div>
+  <main>
+    <div class="box">
+      <div class="tabs" role="tablist">
+        <button
+          class="tab active"
+          id="tabLogin"
+          role="tab"
+          aria-controls="loginPanel"
+          aria-selected="true"
+        >
+          会员登录
+        </button>
+        <button
+          class="tab"
+          id="tabReg"
+          role="tab"
+          aria-controls="regPanel"
+          aria-selected="false"
+        >
+          账号注册
+        </button>
+      </div>
+
+      <!-- 登录面板 -->
+      <form id="loginPanel" class="panel show" role="tabpanel" aria-labelledby="tabLogin" novalidate>
+        <div class="form-group">
+          <label for="loginEmail">邮箱</label>
+          <input
+            type="email"
+            id="loginEmail"
+            placeholder="name@example.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+        <div class="form-group">
+          <label for="loginPwd">密码</label>
+          <input
+            type="password"
+            id="loginPwd"
+            placeholder="请输入您的密码"
+            required
+            minlength="6"
+            autocomplete="current-password"
+          />
+        </div>
+        <div id="loginTip" class="tip" aria-live="polite"></div>
+        <button type="submit" id="btnLogin">立即登录</button>
+      </form>
+
+      <!-- 注册面板 -->
+      <form id="regPanel" class="panel" role="tabpanel" aria-labelledby="tabReg" novalidate>
+        <div class="form-group">
+          <label for="regEmail">邮箱</label>
+          <input
+            type="email"
+            id="regEmail"
+            placeholder="name@example.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+        <div class="form-group">
+          <label for="regPwd">设置密码</label>
+          <input
+            type="password"
+            id="regPwd"
+            placeholder="至少8位，包含字母和数字"
+            required
+            minlength="8"
+            autocomplete="new-password"
+          />
+        </div>
+        <div class="form-group">
+          <label for="regPwd2">确认密码</label>
+          <input
+            type="password"
+            id="regPwd2"
+            placeholder="请再次输入密码"
+            required
+            minlength="8"
+            autocomplete="new-password"
+          />
+        </div>
+        <div id="regTip" class="tip" aria-live="polite"></div>
+        <button type="submit" id="btnReg">立即注册</button>
+      </form>
     </div>
+  </main>
 
-    <div id="loginPanel" class="panel show">
-      <input type="email" id="loginEmail" placeholder="请输入邮箱">
-      <input type="password" id="loginPwd" placeholder="请输入密码">
-      <div id="loginTip" class="tip"></div>
-      <button id="btnLogin">立即登录</button>
-    </div>
+  <script>
+    (function() {
+      'use strict';
 
-    <div id="regPanel" class="panel">
-      <input type="email" id="regEmail" placeholder="请输入邮箱">
-      <input type="password" id="regPwd" placeholder="请设置密码">
-      <input type="password" id="regPwd2" placeholder="请确认密码">
-      <div id="regTip" class="tip"></div>
-      <button id="btnReg">立即注册</button>
-    </div>
-  </div>
+      // 常量配置
+      const API_BASE_URL = 'https://email-login-api.3809026566.workers.dev';
+      const HOME_URL = '../index.html';
+      const LOGIN_ENDPOINT = '/login';
+      const REGISTER_ENDPOINT = '/register';
 
-<script>
-  // 固定你的Worker接口地址
-  const API = "https://email-login-api.3809026566.workers.dev";
-  // 登录/注册成功后跳回官网
-  const HOME_URL = "../index.html";
+      // DOM 元素引用
+      const dom = {
+        tabLogin: document.getElementById('tabLogin'),
+        tabReg: document.getElementById('tabReg'),
+        loginPanel: document.getElementById('loginPanel'),
+        regPanel: document.getElementById('regPanel'),
+        btnLogin: document.getElementById('btnLogin'),
+        btnReg: document.getElementById('btnReg'),
+        loginTip: document.getElementById('loginTip'),
+        regTip: document.getElementById('regTip'),
+        loginForm: document.getElementById('loginPanel'),
+        regForm: document.getElementById('regPanel'),
+      };
 
-  // 页面加载完成后绑定所有事件
-  window.addEventListener('load', function() {
-    // 获取所有DOM元素
-    const tabLogin = document.getElementById('tabLogin');
-    const tabReg = document.getElementById('tabReg');
-    const loginPanel = document.getElementById('loginPanel');
-    const regPanel = document.getElementById('regPanel');
-    const btnLogin = document.getElementById('btnLogin');
-    const btnReg = document.getElementById('btnReg');
-    const loginTip = document.getElementById('loginTip');
-    const regTip = document.getElementById('regTip');
+      // 工具函数
+      const utils = {
+        // 邮箱格式验证
+        isValidEmail: function(email) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return emailRegex.test(email.trim());
+        },
 
-    // 标签切换逻辑
-    tabLogin.onclick = function() {
-      tabLogin.classList.add('active');
-      tabReg.classList.remove('active');
-      loginPanel.classList.add('show');
-      regPanel.classList.remove('show');
-      loginTip.innerText = '';
-      regTip.innerText = '';
-    };
-    tabReg.onclick = function() {
-      tabReg.classList.add('active');
-      tabLogin.classList.remove('active');
-      regPanel.classList.add('show');
-      loginPanel.classList.remove('show');
-      loginTip.innerText = '';
-      regTip.innerText = '';
-    };
+        // 密码强度验证（注册用）
+        isStrongPassword: function(password) {
+          // 至少8位，包含字母和数字
+          const minLength = password.length >= 8;
+          const hasLetter = /[A-Za-z]/.test(password);
+          const hasNumber = /\d/.test(password);
+          return minLength && hasLetter && hasNumber;
+        },
 
-    // 邮箱格式校验
-    function isEmail(val) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
-    }
+        // 显示提示信息
+        showMessage: function(element, message, type = 'error') {
+          element.textContent = message;
+          element.className = 'tip ' + type;
+          element.setAttribute('aria-live', 'assertive');
+        },
 
-    // 登录按钮逻辑
-    btnLogin.onclick = async function() {
-      const email = document.getElementById('loginEmail').value.trim();
-      const pwd = document.getElementById('loginPwd').value.trim();
-      loginTip.className = 'tip';
+        // 清除提示信息
+        clearMessage: function(element) {
+          element.textContent = '';
+          element.className = 'tip';
+          element.removeAttribute('aria-live');
+        },
 
-      if (!isEmail(email)) {
-        loginTip.innerText = '邮箱格式不正确';
-        return;
-      }
-      if (!pwd) {
-        loginTip.innerText = '请输入密码';
-        return;
-      }
+        // 设置按钮加载状态
+        setButtonLoading: function(button, isLoading) {
+          if (isLoading) {
+            button.disabled = true;
+            button.classList.add('loading');
+            const originalText = button.dataset.originalText || button.textContent;
+            button.dataset.originalText = originalText;
+            button.textContent = '处理中...';
+          } else {
+            button.disabled = false;
+            button.classList.remove('loading');
+            const originalText = button.dataset.originalText;
+            if (originalText) {
+              button.textContent = originalText;
+              delete button.dataset.originalText;
+            }
+          }
+        },
 
-      try {
-        const res = await fetch(`${API}/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password: pwd }),
-          mode: 'cors',
-          credentials: 'omit'
+        // 标记输入框错误状态
+        markInputError: function(inputElement, hasError) {
+          if (hasError) {
+            inputElement.classList.add('error');
+          } else {
+            inputElement.classList.remove('error');
+          }
+        },
+
+        // API 请求
+        makeRequest: async function(endpoint, data) {
+          try {
+            const response = await fetch(API_BASE_URL + endpoint, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data),
+              mode: 'cors',
+              credentials: 'omit',
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
+          } catch (error) {
+            console.error('API request failed:', error);
+            throw error;
+          }
+        },
+      };
+
+      // 标签切换功能
+      function switchToTab(selectedTab, selectedPanel) {
+        // 更新标签状态
+        [dom.tabLogin, dom.tabReg].forEach(tab => {
+          tab.classList.remove('active');
+          tab.setAttribute('aria-selected', 'false');
         });
-        const data = await res.json();
-        if (data.success) {
-          loginTip.className = 'tip ok';
-          loginTip.innerText = '登录成功，正在跳转...';
-          setTimeout(() => window.location.href = HOME_URL, 1000);
-        } else {
-          loginTip.innerText = data.msg || '登录失败';
+        selectedTab.classList.add('active');
+        selectedTab.setAttribute('aria-selected', 'true');
+
+        // 更新面板状态
+        [dom.loginPanel, dom.regPanel].forEach(panel => {
+          panel.classList.remove('show');
+        });
+        selectedPanel.classList.add('show');
+
+        // 清除所有提示
+        utils.clearMessage(dom.loginTip);
+        utils.clearMessage(dom.regTip);
+
+        // 清除所有错误标记
+        document.querySelectorAll('input.error').forEach(input => {
+          input.classList.remove('error');
+        });
+
+        // 聚焦到当前面板的第一个输入框
+        const firstInput = selectedPanel.querySelector('input');
+        if (firstInput) {
+          setTimeout(() => firstInput.focus(), 100);
         }
-      } catch (e) {
-        loginTip.innerText = '接口正常，请检查输入';
-        console.error(e);
-      }
-    };
-
-    // 注册按钮逻辑
-    btnReg.onclick = async function() {
-      const email = document.getElementById('regEmail').value.trim();
-      const pwd = document.getElementById('regPwd').value.trim();
-      const pwd2 = document.getElementById('regPwd2').value.trim();
-      regTip.className = 'tip';
-
-      if (!isEmail(email)) {
-        regTip.innerText = '邮箱格式不正确';
-        return;
-      }
-      if (!pwd || !pwd2) {
-        regTip.innerText = '请填写完整密码';
-        return;
-      }
-      if (pwd !== pwd2) {
-        regTip.innerText = '两次密码不一致';
-        return;
       }
 
-      try {
-        const res = await fetch(`${API}/register`, {
-          method: 'PO
+      dom.tabLogin.addEventListener('click', () =>
+        switchToTab(dom.tabLogin, dom.loginPanel)
+      );
+
+      dom.tabReg.addEventListener('click', () =>
+        switchToTab(dom.tabReg, dom.regPanel)
+      );
+
+      // 登录功能
+      async function handleLogin(event) {
+        event.preventDefault();
+
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPwd').value.trim();
+        let isValid = true;
+
+        // 清除之前的提示和错误标记
+        utils.clearMessage(dom.loginTip);
+        utils.markInputError(document.getElementById('loginEmail'), false);
+        utils.markInputError(document.getElementById('loginPwd'), false);
+
+        // 邮箱验证
+        if (!email) {
+          utils.markInputError(document.getElementById('loginEmail'), true);
+          isValid = false;
+        } else if (!utils.isValidEmail(email)) {
+          utils.showMessage(dom.loginTip, '请输入有效的邮箱地址', 'error');
+          utils.markInputError(document.getElementById('loginEmail'), true);
+          isValid = false;
+        }
+
+        // 密码验证
+        if (!password) {
+          utils.markInputError(document.getElementById('loginPwd'), true);
+          isValid = false;
+        }
+
+        if (!isValid) {
+          if (!dom.loginTip.textContent) {
+            utils.showMessage(dom.loginTip, '请填写所有必填字段', 'error');
+          }
+          return;
+        }
+
+        // 设置按钮加载状态
+        utils.setButtonLoading(dom.btnLogin, true);
+
+        try {
+          const result = await utils.makeRequest(LOGIN_ENDPOINT, {
+            email,
+            password,
+          });
+
+          if (result.success) {
+            utils.showMessage(dom.loginTip, '登录成功，正在跳转...', 'success');
+            setTimeout(() => {
+              window.location.href = HOME_URL;
+            }, 1000);
+          } else {
+            utils.showMessage(dom.loginTip, result.msg || '登录失败，请检查邮箱和密码', 'error');
+            utils.markInputError(document.getElementById('loginPwd'), true);
+          }
+        } catch (error) {
+          utils.showMessage(
+            dom.loginTip,
+            '网络连接失败，请稍后重试',
+            'error'
+          );
+        } finally {
+          utils.setButtonLoading(dom.btnLogin, false);
+        }
+      }
+
+      // 注册功能
+      async function handleRegister(event) {
+        event.preventDefault();
+
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPwd').value.trim();
+        const confirmPassword = document.getElementById('regPwd2').value.trim();
+        let isValid = true;
+
+        // 清除之前的提示和错误标记
+        utils.clearMessage(dom.regTip);
+        utils.markInputError(document.getElementById('regEmail'), false);
+        utils.markInputError(document.getElementById('regPwd'), false);
+        utils.markInputError(document.getElementById('regPwd2'), false);
+
+        // 邮箱验证
+        if (!email) {
+          utils.markInputError(document.getElementById('regEmail'), true);
+          isValid = false;
+        } else if (!utils.isValidEmail(email)) {
+          utils.showMessage(dom.regTip, '请输入有效的邮箱地址', 'error');
+          utils.markInputError(document.getElementById('regEmail'), true);
+          isValid = false;
+        }
+
+        // 密码验证
+        if (!password) {
+          utils.markInputError(document.getElementById('regPwd'), true);
+          isValid = false;
+        } else if (!utils.isStrongPassword(password)) {
+          utils.showMessage(
+            dom.regTip,
+            '密码至少8位，需包含字母和数字',
+            'error'
+          );
+          utils.markInputError(document.getElementById('regPwd'), true);
+          isValid = false;
+        }
+
+        // 确认密码验证
+        if (!confirmPassword) {
+          utils.markInputError(document.getElementById('regPwd2'), true);
+          isValid = false;
+        } else if (password && confirmPassword && password !== confirmPassword) {
+          utils.showMessage(dom.regTip, '两次输入的密码不一致', 'error');
+          utils.markInputError(document.getElementById('regPwd2'), true);
+          isValid = false;
+        }
+
+        if (!isValid) {
+          if (!dom.regTip.textContent) {
+            utils.showMessage(dom.regTip, '请正确填写所有字段', 'error');
+          }
+          return;
+        }
+
+        // 设置按钮加载状态
+        utils.setButtonLoading(dom.btnReg, true);
+
+        try {
+          const result = await utils.makeRequest(REGISTER_ENDPOINT, {
+            email,
+            password,
+          });
+
+          if (result.success) {
+            utils.showMessage(dom.regTip, '注册成功，正在跳转...', 'success');
+            setTimeout(() => {
+              window.location.href = HOME_URL;
+            }, 1000);
+          } else {
+            utils.showMessage(
+              dom.regTip,
+              result.msg || '注册失败，该邮箱可能已被注册',
+              'error'
+            );
+          }
+        } catch (error) {
+          utils.showMessage(
+            dom.regTip,
+            '网络连接失败，请稍后重试',
+            'error'
+          );
+        } finally {
+          utils.setButtonLoading(dom.btnReg, false);
+        }
+      }
+
+      // 事件监听
+      dom.loginForm.addEventListener('submit', handleLogin);
+      dom.regForm.addEventListener('submit', handleRegister);
+
+      // 输入时清除错误状态
+      function clearErrorOnInput(inputId, tipElement) {
+        const input = document.getElementById(inputId);
+        if (input) {
+          input.addEventListener('input', () => {
+            utils.markInputError(input, false);
+            utils.clearMessage(tipElement);
+          });
+        }
+      }
+
+      // 为所有输入框绑定清除错误的功能
+      clearErrorOnInput('loginEmail', dom.loginTip);
+      clearErrorOnInput('loginPwd', dom.loginTip);
+      clearErrorOnInput('regEmail', dom.regTip);
+      clearErrorOnInput('regPwd', dom.regTip);
+      clearErrorOnInput('regPwd2', dom.regTip);
+
+      // 页面加载完成后聚焦到登录邮箱输入框
+      window.addEventListener('load', () => {
+        const loginEmailInput = document.getElementById('loginEmail');
+        if (loginEmailInput) {
+          loginEmailInput.focus();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
