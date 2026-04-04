@@ -1,574 +1,541 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>会员登录与注册</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>众志通讯 - 企业官方网站</title>
+    <meta name="description" content="众志通讯，专业的手机销售与维修服务提供商，致力于为您提供优质的产品和服务。">
+    <link rel="icon" href="./zztx.ico" type="image/x-icon">
+    <style>
+/* --- 全局样式重置与基础设置 --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f9f9f9;
+}
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+/* --- 头部样式 --- */
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 10px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+}
+.tagline {
+    font-size: 12px;
+    text-align: center;
+    margin-top: 3px;
+    opacity: 0.9;
+}
+/* --- 头部内容样式 --- */
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 10px 0;
+}
+.logo-section {
+    display: flex;
+    align-items: center;
+}
+.logo-section img {
+    width: 60px;
+    height: 60px;
+    margin-right: 15px;
+}
+.text-section {
+    display: flex;
+    flex-direction: column;
+}
+/* --- 导航栏样式 --- */
+nav {
+    background-color: #34495e;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.nav-container {
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center;
+    height: 50px;
+}
+.nav-links {
+    display: flex;
+    list-style: none;
+}
+.nav-links li {
+    margin: 0 15px;
+}
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+.nav-links a:hover {
+    color: #3498db;
+}
+/* 汉堡菜单样式 (移动端) */
+.menu-toggle {
+    display: none; /* 默认隐藏 */
+    flex-direction: column;
+    cursor: pointer;
+}
+/* --- 英雄区域样式 --- */
+.hero {
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1556740738-b6a63e27c4df?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
+    color: white;
+    text-align: center;
+    padding: 100px 0;
+}
+.hero h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+.hero p {
+    font-size: 20px;
+    margin-bottom: 30px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.btn {
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+.btn:hover {
+    background-color: #2980b9;
+}
+/* --- 主要内容区域通用样式 --- */
+.section {
+    padding: 80px 0;
+    background-color: white;
+}
+.section:nth-child(even) {
+    background-color: #f4f7f6;
+}
+.section-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+.section-header h2 {
+    font-size: 36px;
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+.section-header p {
+    color: #777;
+    max-width: 700px;
+    margin: 0 auto;
+}
+/* --- 服务项目样式 --- */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+.service-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    padding: 30px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+.service-card h3 {
+    margin-bottom: 15px;
+    font-size: 22px;
+    color: #2c3e50;
+}
+.service-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #3498db;
+}
+/* --- 关于我们样式 --- */
+.about-content {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+}
+.about-text, .about-image {
+    flex: 1;
+}
+.about-image img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+.about-text h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+.about-text p {
+    margin-bottom: 15px;
+    line-height: 1.8;
+}
+/* --- 联系我们样式 --- */
+.contact-info {
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    max-width: 600px; /* 限制最大宽度 */
+    margin: 0 auto;   /* 水平居中 */
+    text-align: center; /* 内部文本居中 */
+}
+.contact-info h3 {
+    margin-bottom: 25px;
+    font-size: 24px;
+    color: #2c3e50;
+}
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    justify-content: center; /* 内容居中 */
+}
+.info-item span {
+    margin-right: 15px;
+    font-size: 20px;
+    color: #3498db;
+}
+/* --- 关键样式：让电话链接看起来像普通文本 --- */
+.phone-link {
+    color: inherit;
+    text-decoration: none;
+    cursor: default;
+}
+.phone-link:visited {
+    text-decoration: none;
+}
+/* --- 页脚样式 --- */
+footer {
+    background-color: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 40px 0;
+}
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+.footer-col {
+    flex: 1;
+    min-width: 250px;
+}
+.footer-col h4 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    display: inline-block;
+}
+.footer-col p, .footer-col a {
+    color: #bdc3c7;
+    text-decoration: none;
+    margin-bottom: 10px;
+    display: block;
+}
+.footer-col a:hover {
+    color: white;
+}
+.copyright {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #34495e;
+    font-size: 14px;
+    opacity: 0.8;
+}
+/* --- 工具页面容器样式 --- */
+.tools-container {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.tool-links {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+/* --- 上传信息样式 --- */
+.upload-info {
+    background-color: black;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
+}
+/* --- 工具页面链接样式 --- */
+.tool-link {
+    display: inline-block;
+    color: #2c3e50;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: 500;
+    padding: 12px 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+}
+.tool-link:hover {
+    color: #3498db;
+    border-color: #3498db;
+    background-color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+}
+.tool-link:active {
+    color: #2980b9;
+    transform: translateY(0);
+}
+/* --- 响应式设计 --- */
+@media (max-width: 992px) {
+    .about-content {
+        flex-direction: column;
+        text-align: center;
     }
-
-    body {
-      background: #f6f8fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
+}
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 36px;
     }
-
-    main {
-      width: 100%;
-      max-width: 400px;
+    .hero p {
+        font-size: 18px;
     }
-
-    .box {
-      width: 100%;
-      background: #fff;
-      border-radius: 14px;
-      padding: 32px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    .section-header h2 {
+        font-size: 30px;
     }
-
-    .tabs {
-      display: flex;
-      margin-bottom: 24px;
-      border-bottom: 1px solid #eee;
+    .header-content {
+        flex-direction: column;
+        text-align: center;
     }
-
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 12px;
-      font-size: 16px;
-      cursor: pointer;
-      color: #555;
-      user-select: none;
-      background: none;
-      border: none;
+    .logo-section {
+        flex-direction: column;
+        margin-bottom: 15px;
     }
-
-    .tab.active {
-      color: #0071e3;
-      border-bottom: 2px solid #0071e3;
-      font-weight: 500;
+    .logo-section img {
+        margin-right: 0;
+        margin-bottom: 8px;
+        width: 50px;
+        height: 50px;
     }
-
-    .panel {
-      display: none;
+    .nav-container {
+        justify-content: space-between;
     }
-
-    .panel.show {
-      display: block;
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 50px;
+        left: 0;
+        right: 0;
+        background-color: #34495e;
+        flex-direction: column;
+        padding: 20px;
+        z-index: 1001;
     }
-
-    .form-group {
-      margin-bottom: 16px;
+    .nav-links.active {
+        display: flex;
     }
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 14px;
-      color: #333;
+    .nav-links li {
+        margin: 10px 0;
     }
-
-    input {
-      width: 100%;
-      height: 48px;
-      padding: 0 16px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-size: 15px;
-      transition: border-color 0.2s;
+    .menu-toggle {
+        display: flex;
     }
-
-    input:focus {
-      outline: none;
-      border-color: #0071e3;
-    }
-
-    input.error {
-      border-color: #ff3b30;
-    }
-
-    .tip {
-      font-size: 14px;
-      margin: -8px 0 12px;
-      min-height: 20px;
-      line-height: 1.4;
-    }
-
-    .tip.error {
-      color: #ff3b30;
-    }
-
-    .tip.success {
-      color: #34c759;
-    }
-
-    button {
-      width: 100%;
-      height: 48px;
-      background: #0071e3;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    button:disabled,
-    button.loading {
-      background-color: #a0c8f0;
-      cursor: not-allowed;
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-  </style>
+}
+    </style>
 </head>
 <body>
-  <main>
-    <div class="box">
-      <div class="tabs" role="tablist">
-        <button
-          class="tab active"
-          id="tabLogin"
-          role="tab"
-          aria-controls="loginPanel"
-          aria-selected="true"
-        >
-          会员登录
-        </button>
-        <button
-          class="tab"
-          id="tabReg"
-          role="tab"
-          aria-controls="regPanel"
-          aria-selected="false"
-        >
-          账号注册
-        </button>
-      </div>
-
-      <!-- 登录面板 -->
-      <form id="loginPanel" class="panel show" role="tabpanel" aria-labelledby="tabLogin" novalidate>
-        <div class="form-group">
-          <label for="loginEmail">邮箱</label>
-          <input
-            type="email"
-            id="loginEmail"
-            placeholder="name@example.com"
-            required
-            autocomplete="email"
-          />
+    <!-- 头部 -->
+    <header>
+        <div class="container header-content">
+            <div class="logo-section">
+                <img src="./zztxlogo.png" alt="众志通讯Logo">
+                <div class="text-section">
+                    <div class="logo name">众志通讯</div>
+                    <div class="tagline">您身边的通讯专家，服务企业与个人</div>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-          <label for="loginPwd">密码</label>
-          <input
-            type="password"
-            id="loginPwd"
-            placeholder="请输入您的密码"
-            required
-            minlength="6"
-            autocomplete="current-password"
-          />
+    </header>
+    <!-- 导航栏（已加登录入口，核心修改处） -->
+    <nav>
+        <div class="container nav-container">
+            <ul class="nav-links">
+                <li><a href="#home">首页</a></li>
+                <li><a href="#services">服务项目</a></li>
+                <li><a href="#about">关于我们</a></li>
+                <li><a href="#contact">联系我们</a></li>
+                <!-- 新增：登录入口 → 指向login文件夹的登录页，蓝色高亮，和官网风格统一 -->
+                <li><a href="./login/" style="color:#3498db;font-weight:600;">登录</a></li>
+            </ul>
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <span>菜单</span>
+            </div>
         </div>
-        <div id="loginTip" class="tip" aria-live="polite"></div>
-        <button type="submit" id="btnLogin">立即登录</button>
-      </form>
-
-      <!-- 注册面板 -->
-      <form id="regPanel" class="panel" role="tabpanel" aria-labelledby="tabReg" novalidate>
-        <div class="form-group">
-          <label for="regEmail">邮箱</label>
-          <input
-            type="email"
-            id="regEmail"
-            placeholder="name@example.com"
-            required
-            autocomplete="email"
-          />
+    </nav>
+    <!-- 主要内容 -->
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <h1>欢迎来到众志通讯</h1>
+                <p>专注于提供高品质的通讯产品与服务，用心连接每一位客户。</p>
+                <a href="#contact" class="btn">立即联系</a>
+            </div>
+        </section>
+        <section id="services" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>我们的服务</h2>
+                    <p>我们提供从企业通信解决方案到个人设备维修的全方位服务，满足您的各种需求。</p>
+                </div>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">[📱]</div>
+                        <h3>手机销售</h3>
+                        <p>提供各大品牌最新款手机，正品保障，企业团购享优惠。</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">[🔧]</div>
+                        <h3>设备维修</h3>
+                        <p>专业的维修团队，快速、高效地解决手机、平板等设备的各种故障。</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">[🌐]</div>
+                        <h3>企业通信</h3>
+                        <p>为企业客户提供VoIP、视频会议、企业宽带等定制化解决方案。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="about" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>关于我们</h2>
+                    <p>众志通讯，用心服务每一位客户。</p>
+                </div>
+                <div class="about-content">
+                    <div class="about-image">
+                        <img src="./zztx.png" alt="众志通讯店铺照片">
+                    </div>
+                    <div class="about-text">
+                        <h3>众志通讯 - 您值得信赖的通讯伙伴</h3>
+                        <p>自成立以来，众志通讯始终秉持"诚信为本，服务至上"的经营理念，致力于为广大客户提供最优质的产品和最专业的服务。</p>
+                        <p>我们拥有一支经验丰富、技术精湛的团队，无论是个人用户的手机购买与维修，还是企业客户的通信系统建设，我们都能提供一站式的解决方案。</p>
+                        <p>感谢您长期以来的支持与信任，我们将继续努力，不断提升服务品质，与您携手共进，共创美好未来。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="contact" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>联系我们</h2>
+                    <p>无论您有任何问题或需求，欢迎随时与我们联系，我们将竭诚为您服务。</p>
+                </div>
+                <div class="contact-info">
+                    <h3>联系方式</h3>
+                    <div class="info-item">
+                        <span>📞</span>
+                        <div>
+                            <h4>电话</h4>
+                            <p><a href="tel:18128071189" class="phone-link">18128071189</a></p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span>✉️</span>
+                        <div>
+                            <h4>邮箱</h4>
+                            <p><a href="mailto:liang@qq.com">liang@qq.com</a></p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span>📍</span>
+                        <div>
+                            <h4>地址</h4>
+                            <p>中国广东省怀集县梁村镇众志通讯</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <h4>关于我们</h4>
+                    <p>专注通讯服务，用心连接客户</p>
+                    <p>诚信为本，服务至上</p>
+                </div>
+                <div class="footer-col">
+                    <h4>服务项目</h4>
+                    <a href="#services">手机销售</a>
+                    <a href="#services">设备维修</a>
+                    <a href="#services">企业通信</a>
+                </div>
+                <div class="footer-col">
+                    <h4>联系我们</h4>
+                    <a href="tel:18128071189">18128071189</a>
+                    <a href="mailto:liang@qq.com">liang@qq.com</a>
+                    <p>中国广东省怀集县梁村镇众志通讯</p>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 众志通讯 版权所有
+            </div>
         </div>
-        <div class="form-group">
-          <label for="regPwd">设置密码</label>
-          <input
-            type="password"
-            id="regPwd"
-            placeholder="至少8位，包含字母和数字"
-            required
-            minlength="8"
-            autocomplete="new-password"
-          />
-        </div>
-        <div class="form-group">
-          <label for="regPwd2">确认密码</label>
-          <input
-            type="password"
-            id="regPwd2"
-            placeholder="请再次输入密码"
-            required
-            minlength="8"
-            autocomplete="new-password"
-          />
-        </div>
-        <div id="regTip" class="tip" aria-live="polite"></div>
-        <button type="submit" id="btnReg">立即注册</button>
-      </form>
+    </footer>
+    <div class="upload-info">
+        上传日期：2025年10月3日11:20 | 上传人：梁朔光
     </div>
-  </main>
-
-  <script>
-    (function() {
-      'use strict';
-
-      // 常量配置
-      const API_BASE_URL = 'https://email-login-api.3809026566.workers.dev';
-      const HOME_URL = '../index.html';
-      const LOGIN_ENDPOINT = '/login';
-      const REGISTER_ENDPOINT = '/register';
-
-      // DOM 元素引用
-      const dom = {
-        tabLogin: document.getElementById('tabLogin'),
-        tabReg: document.getElementById('tabReg'),
-        loginPanel: document.getElementById('loginPanel'),
-        regPanel: document.getElementById('regPanel'),
-        btnLogin: document.getElementById('btnLogin'),
-        btnReg: document.getElementById('btnReg'),
-        loginTip: document.getElementById('loginTip'),
-        regTip: document.getElementById('regTip'),
-        loginForm: document.getElementById('loginPanel'),
-        regForm: document.getElementById('regPanel'),
-      };
-
-      // 工具函数
-      const utils = {
-        // 邮箱格式验证
-        isValidEmail: function(email) {
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          return emailRegex.test(email.trim());
-        },
-
-        // 密码强度验证（注册用）
-        isStrongPassword: function(password) {
-          // 至少8位，包含字母和数字
-          const minLength = password.length >= 8;
-          const hasLetter = /[A-Za-z]/.test(password);
-          const hasNumber = /\d/.test(password);
-          return minLength && hasLetter && hasNumber;
-        },
-
-        // 显示提示信息
-        showMessage: function(element, message, type = 'error') {
-          element.textContent = message;
-          element.className = 'tip ' + type;
-          element.setAttribute('aria-live', 'assertive');
-        },
-
-        // 清除提示信息
-        clearMessage: function(element) {
-          element.textContent = '';
-          element.className = 'tip';
-          element.removeAttribute('aria-live');
-        },
-
-        // 设置按钮加载状态
-        setButtonLoading: function(button, isLoading) {
-          if (isLoading) {
-            button.disabled = true;
-            button.classList.add('loading');
-            const originalText = button.dataset.originalText || button.textContent;
-            button.dataset.originalText = originalText;
-            button.textContent = '处理中...';
-          } else {
-            button.disabled = false;
-            button.classList.remove('loading');
-            const originalText = button.dataset.originalText;
-            if (originalText) {
-              button.textContent = originalText;
-              delete button.dataset.originalText;
-            }
-          }
-        },
-
-        // 标记输入框错误状态
-        markInputError: function(inputElement, hasError) {
-          if (hasError) {
-            inputElement.classList.add('error');
-          } else {
-            inputElement.classList.remove('error');
-          }
-        },
-
-        // API 请求
-        makeRequest: async function(endpoint, data) {
-          try {
-            const response = await fetch(API_BASE_URL + endpoint, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(data),
-              mode: 'cors',
-              credentials: 'omit',
-            });
-
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            return await response.json();
-          } catch (error) {
-            console.error('API request failed:', error);
-            throw error;
-          }
-        },
-      };
-
-      // 标签切换功能
-      function switchToTab(selectedTab, selectedPanel) {
-        // 更新标签状态
-        [dom.tabLogin, dom.tabReg].forEach(tab => {
-          tab.classList.remove('active');
-          tab.setAttribute('aria-selected', 'false');
-        });
-        selectedTab.classList.add('active');
-        selectedTab.setAttribute('aria-selected', 'true');
-
-        // 更新面板状态
-        [dom.loginPanel, dom.regPanel].forEach(panel => {
-          panel.classList.remove('show');
-        });
-        selectedPanel.classList.add('show');
-
-        // 清除所有提示
-        utils.clearMessage(dom.loginTip);
-        utils.clearMessage(dom.regTip);
-
-        // 清除所有错误标记
-        document.querySelectorAll('input.error').forEach(input => {
-          input.classList.remove('error');
-        });
-
-        // 聚焦到当前面板的第一个输入框
-        const firstInput = selectedPanel.querySelector('input');
-        if (firstInput) {
-          setTimeout(() => firstInput.focus(), 100);
-        }
-      }
-
-      dom.tabLogin.addEventListener('click', () =>
-        switchToTab(dom.tabLogin, dom.loginPanel)
-      );
-
-      dom.tabReg.addEventListener('click', () =>
-        switchToTab(dom.tabReg, dom.regPanel)
-      );
-
-      // 登录功能
-      async function handleLogin(event) {
-        event.preventDefault();
-
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPwd').value.trim();
-        let isValid = true;
-
-        // 清除之前的提示和错误标记
-        utils.clearMessage(dom.loginTip);
-        utils.markInputError(document.getElementById('loginEmail'), false);
-        utils.markInputError(document.getElementById('loginPwd'), false);
-
-        // 邮箱验证
-        if (!email) {
-          utils.markInputError(document.getElementById('loginEmail'), true);
-          isValid = false;
-        } else if (!utils.isValidEmail(email)) {
-          utils.showMessage(dom.loginTip, '请输入有效的邮箱地址', 'error');
-          utils.markInputError(document.getElementById('loginEmail'), true);
-          isValid = false;
-        }
-
-        // 密码验证
-        if (!password) {
-          utils.markInputError(document.getElementById('loginPwd'), true);
-          isValid = false;
-        }
-
-        if (!isValid) {
-          if (!dom.loginTip.textContent) {
-            utils.showMessage(dom.loginTip, '请填写所有必填字段', 'error');
-          }
-          return;
-        }
-
-        // 设置按钮加载状态
-        utils.setButtonLoading(dom.btnLogin, true);
-
-        try {
-          const result = await utils.makeRequest(LOGIN_ENDPOINT, {
-            email,
-            password,
-          });
-
-          if (result.success) {
-            utils.showMessage(dom.loginTip, '登录成功，正在跳转...', 'success');
-            setTimeout(() => {
-              window.location.href = HOME_URL;
-            }, 1000);
-          } else {
-            utils.showMessage(dom.loginTip, result.msg || '登录失败，请检查邮箱和密码', 'error');
-            utils.markInputError(document.getElementById('loginPwd'), true);
-          }
-        } catch (error) {
-          utils.showMessage(
-            dom.loginTip,
-            '网络连接失败，请稍后重试',
-            'error'
-          );
-        } finally {
-          utils.setButtonLoading(dom.btnLogin, false);
-        }
-      }
-
-      // 注册功能
-      async function handleRegister(event) {
-        event.preventDefault();
-
-        const email = document.getElementById('regEmail').value.trim();
-        const password = document.getElementById('regPwd').value.trim();
-        const confirmPassword = document.getElementById('regPwd2').value.trim();
-        let isValid = true;
-
-        // 清除之前的提示和错误标记
-        utils.clearMessage(dom.regTip);
-        utils.markInputError(document.getElementById('regEmail'), false);
-        utils.markInputError(document.getElementById('regPwd'), false);
-        utils.markInputError(document.getElementById('regPwd2'), false);
-
-        // 邮箱验证
-        if (!email) {
-          utils.markInputError(document.getElementById('regEmail'), true);
-          isValid = false;
-        } else if (!utils.isValidEmail(email)) {
-          utils.showMessage(dom.regTip, '请输入有效的邮箱地址', 'error');
-          utils.markInputError(document.getElementById('regEmail'), true);
-          isValid = false;
-        }
-
-        // 密码验证
-        if (!password) {
-          utils.markInputError(document.getElementById('regPwd'), true);
-          isValid = false;
-        } else if (!utils.isStrongPassword(password)) {
-          utils.showMessage(
-            dom.regTip,
-            '密码至少8位，需包含字母和数字',
-            'error'
-          );
-          utils.markInputError(document.getElementById('regPwd'), true);
-          isValid = false;
-        }
-
-        // 确认密码验证
-        if (!confirmPassword) {
-          utils.markInputError(document.getElementById('regPwd2'), true);
-          isValid = false;
-        } else if (password && confirmPassword && password !== confirmPassword) {
-          utils.showMessage(dom.regTip, '两次输入的密码不一致', 'error');
-          utils.markInputError(document.getElementById('regPwd2'), true);
-          isValid = false;
-        }
-
-        if (!isValid) {
-          if (!dom.regTip.textContent) {
-            utils.showMessage(dom.regTip, '请正确填写所有字段', 'error');
-          }
-          return;
-        }
-
-        // 设置按钮加载状态
-        utils.setButtonLoading(dom.btnReg, true);
-
-        try {
-          const result = await utils.makeRequest(REGISTER_ENDPOINT, {
-            email,
-            password,
-          });
-
-          if (result.success) {
-            utils.showMessage(dom.regTip, '注册成功，正在跳转...', 'success');
-            setTimeout(() => {
-              window.location.href = HOME_URL;
-            }, 1000);
-          } else {
-            utils.showMessage(
-              dom.regTip,
-              result.msg || '注册失败，该邮箱可能已被注册',
-              'error'
-            );
-          }
-        } catch (error) {
-          utils.showMessage(
-            dom.regTip,
-            '网络连接失败，请稍后重试',
-            'error'
-          );
-        } finally {
-          utils.setButtonLoading(dom.btnReg, false);
-        }
-      }
-
-      // 事件监听
-      dom.loginForm.addEventListener('submit', handleLogin);
-      dom.regForm.addEventListener('submit', handleRegister);
-
-      // 输入时清除错误状态
-      function clearErrorOnInput(inputId, tipElement) {
-        const input = document.getElementById(inputId);
-        if (input) {
-          input.addEventListener('input', () => {
-            utils.markInputError(input, false);
-            utils.clearMessage(tipElement);
-          });
-        }
-      }
-
-      // 为所有输入框绑定清除错误的功能
-      clearErrorOnInput('loginEmail', dom.loginTip);
-      clearErrorOnInput('loginPwd', dom.loginTip);
-      clearErrorOnInput('regEmail', dom.regTip);
-      clearErrorOnInput('regPwd', dom.regTip);
-      clearErrorOnInput('regPwd2', dom.regTip);
-
-      // 页面加载完成后聚焦到登录邮箱输入框
-      window.addEventListener('load', () => {
-        const loginEmailInput = document.getElementById('loginEmail');
-        if (loginEmailInput) {
-          loginEmailInput.focus();
-        }
-      });
-    })();
-  </script>
+    <!-- JS（优化移动端登录入口高亮，功能不变） -->
+    <script>
+function toggleMenu() {
+    const navLinks = document.querySelector('.nav-links');
+    navLinks.classList.toggle('active');
+    // 移动端登录入口也蓝色高亮，和电脑端一致
+    navLinks.querySelector('li:last-child a').style.color = '#3498db';
+}
+    </script>
 </body>
 </html>
