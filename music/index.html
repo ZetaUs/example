@@ -20,7 +20,6 @@
     margin: 0 auto;
   }
 
-  /* 歌曲信息 */
   .song-info {
     text-align: center;
     margin: 20px 0;
@@ -35,7 +34,6 @@
     color: #aaa;
   }
 
-  /* 光盘封面 */
   .disc-box {
     display: flex;
     justify-content: center;
@@ -64,7 +62,6 @@
     border-radius: 20px;
   }
 
-  /* 开始播放大按钮（你要的） */
   .play-btn {
     display: block;
     width: 100%;
@@ -77,10 +74,6 @@
     border: none;
     border-radius: 12px;
     cursor: pointer;
-    transition: background 0.2s;
-  }
-  .play-btn:hover {
-    background: #889be7;
   }
   .play-btn:active {
     background: #5a6cb2;
@@ -126,8 +119,8 @@
 <body>
 
 <div class="song-info">
-  <div class="song-title" id="songTitle">Little Starlight</div>
-  <div class="song-artist" id="songArtist">作曲：ZetaWave</div>
+  <div class="song-title">Little Starlight</div>
+  <div class="song-artist">作曲：ZetaWave</div>
 </div>
 
 <div class="disc-box">
@@ -135,9 +128,8 @@
 </div>
 
 <div class="player">
-  <audio id="audio">
+  <audio id="audio" src="Little Starlight.mp3">
 
-  <!-- 你要的 开始播放 按钮 -->
   <button class="play-btn" id="playBtn" onclick="togglePlay()">▶️ 开始播放</button>
 
   <div class="progress" onclick="seek(event)">
@@ -150,33 +142,22 @@
 </div>
 
 <script>
-const AUDIO_FILE = "Little Starlight.mp3";
-const LRC_FILE   = "Little Starlight.lrc";
-const IMG_FILE   = "ZetaWave.png";
-
-const audio = document.getElementById("audio");
-const bar = document.getElementById("bar");
-const lrcList = document.getElementById("lrcList");
-const disc = document.getElementById("disc");
-const playBtn = document.getElementById("playBtn");
-const titleEl = document.getElementById("songTitle");
-const artistEl = document.getElementById("songArtist");
+const audio = document.getElementById('audio');
+const disc = document.getElementById('disc');
+const playBtn = document.getElementById('playBtn');
+const bar = document.getElementById('bar');
+const lrcList = document.getElementById('lrcList');
 
 let lrcLines = [];
 let currentIndex = -1;
-let isPlaying = false;
-
-audio.src = AUDIO_FILE;
-titleEl.innerText = "Little Starlight";
-artistEl.innerText = "作曲：ZetaWave";
 
 // 加载歌词
-fetch(LRC_FILE)
+fetch('Little Starlight.lrc')
   .then(res => res.text())
   .then(text => parseLRC(text));
 
 function parseLRC(text) {
-  const lines = text.split("\n");
+  const lines = text.split('\n');
   lrcLines = [];
   lines.forEach(line => {
     const regex = /\[(\d{2}):(\d{2})\.(\d{2,3})\](sslocal://flow/file_open?url=.%2A&flow_extra=eyJsaW5rX3R5cGUiOiJjb2RlX2ludGVycHJldGVyIn0=)/;
@@ -194,47 +175,40 @@ function parseLRC(text) {
 }
 
 function renderLRC() {
-  lrcList.innerHTML = "";
+  lrcList.innerHTML = '';
   lrcLines.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "lrc-line";
+    const div = document.createElement('div');
+    div.className = 'lrc-line';
     div.innerText = item.content;
     lrcList.appendChild(div);
   });
 }
 
-// 播放/暂停切换（按钮+光盘）
 function togglePlay() {
   if (audio.paused) {
     audio.play();
-    disc.classList.add("playing");
-    playBtn.innerHTML = "⏸️ 暂停播放";
-    isPlaying = true;
+    disc.classList.add('playing');
+    playBtn.innerHTML = '⏸️ 暂停播放';
   } else {
     audio.pause();
-    disc.classList.remove("playing");
-    playBtn.innerHTML = "▶️ 开始播放";
-    isPlaying = false;
+    disc.classList.remove('playing');
+    playBtn.innerHTML = '▶️ 开始播放';
   }
 }
 
-// 进度条点击跳转
 function seek(e) {
   const rect = bar.parentElement.getBoundingClientRect();
   const per = (e.clientX - rect.left) / rect.width;
   audio.currentTime = per * audio.duration;
 }
 
-// 歌词同步 + 进度条
-audio.addEventListener("timeupdate", () => {
+audio.addEventListener('timeupdate', () => {
   if (!audio.duration) return;
-  bar.style.width = (audio.currentTime / audio.duration * 100) + "%";
+  bar.style.width = (audio.currentTime / audio.duration * 100) + '%';
 
   let target = -1;
   for (let i = 0; i < lrcLines.length; i++) {
-    if (audio.currentTime >= lrcLines[i].time) {
-      target = i;
-    }
+    if (audio.currentTime >= lrcLines[i].time) target = i;
   }
 
   if (target !== currentIndex && target !== -1) {
@@ -244,19 +218,17 @@ audio.addEventListener("timeupdate", () => {
 });
 
 function syncLRC() {
-  document.querySelectorAll(".lrc-line").forEach((el, i) => {
-    el.classList.toggle("active", i === currentIndex);
+  document.querySelectorAll('.lrc-line').forEach((el, i) => {
+    el.classList.toggle('active', i === currentIndex);
   });
   const lineHeight = 44;
   const offset = lrcList.clientHeight / 2 - lineHeight / 2;
   lrcList.style.transform = `translateY(-${currentIndex * lineHeight - offset}px)`;
 }
 
-// 播放结束后重置按钮
-audio.addEventListener("ended", () => {
-  disc.classList.remove("playing");
-  playBtn.innerHTML = "▶️ 开始播放";
-  isPlaying = false;
+audio.addEventListener('ended', () => {
+  disc.classList.remove('playing');
+  playBtn.innerHTML = '▶️ 开始播放';
 });
 </script>
 </body>
