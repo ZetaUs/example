@@ -1,2 +1,2 @@
 # example
-[Example login](./example login)
+[Example login](examplelogin)
