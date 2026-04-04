@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>音乐播放器</title>
+<title>Little Starlight</title>
 <style>
   * {
     margin: 0;
@@ -26,12 +26,12 @@
     margin: 20px 0;
   }
   .song-title {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: bold;
     margin-bottom: 6px;
   }
   .song-artist {
-    font-size: 15px;
+    font-size: 16px;
     color: #aaa;
   }
 
@@ -41,7 +41,6 @@
     justify-content: center;
     margin: 30px 0;
   }
-
   .disc {
     width: 200px;
     height: 200px;
@@ -51,11 +50,9 @@
     animation: rotate 22s linear infinite;
     animation-play-state: paused;
   }
-
   .disc.playing {
     animation-play-state: running;
   }
-
   @keyframes rotate {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -67,6 +64,28 @@
     border-radius: 20px;
   }
 
+  /* 开始播放大按钮（你要的） */
+  .play-btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    margin: 10px 0 20px;
+    font-size: 18px;
+    font-weight: bold;
+    background: #7289da;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .play-btn:hover {
+    background: #889be7;
+  }
+  .play-btn:active {
+    background: #5a6cb2;
+  }
+
   .progress {
     width: 100%;
     height: 6px;
@@ -75,32 +94,11 @@
     margin: 15px 0;
     cursor: pointer;
   }
-
   .progress .bar {
     height: 100%;
     background: #7289da;
     width: 0%;
     border-radius: 3px;
-  }
-
-  .controls {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin: 20px 0;
-  }
-
-  button {
-    padding: 10px 18px;
-    border-radius: 10px;
-    border: none;
-    background: #2a3451;
-    color: #fff;
-    cursor: pointer;
-  }
-
-  button:active {
-    background: #3b4666;
   }
 
   .lrc-box {
@@ -110,17 +108,14 @@
     border-radius: 14px;
     padding: 20px 10px;
   }
-
   .lrc-list {
     transition: transform 0.4s ease;
     text-align: center;
   }
-
   .lrc-line {
     padding: 10px 0;
     color: #777;
   }
-
   .lrc-line.active {
     color: #7289da;
     font-weight: bold;
@@ -132,7 +127,7 @@
 
 <div class="song-info">
   <div class="song-title" id="songTitle">Little Starlight</div>
-  <div class="song-artist" id="songArtist">ZetaWave</div>
+  <div class="song-artist" id="songArtist">作曲：ZetaWave</div>
 </div>
 
 <div class="disc-box">
@@ -142,12 +137,11 @@
 <div class="player">
   <audio id="audio">
 
+  <!-- 你要的 开始播放 按钮 -->
+  <button class="play-btn" id="playBtn" onclick="togglePlay()">▶️ 开始播放</button>
+
   <div class="progress" onclick="seek(event)">
     <div class="bar" id="bar"></div>
-  </div>
-
-  <div class="controls">
-    <button onclick="playPause()">播放 / 暂停</button>
   </div>
 
   <div class="lrc-box">
@@ -156,32 +150,25 @@
 </div>
 
 <script>
-// 你只需要这三个文件在同一个文件夹
-// Little Starlight.mp3
-// Little Starlight.lrc
-// ZetaWave.png
-
 const AUDIO_FILE = "Little Starlight.mp3";
 const LRC_FILE   = "Little Starlight.lrc";
 const IMG_FILE   = "ZetaWave.png";
-
-// 自动从文件名提取 歌曲名、作者
-const songTitle = "Little Starlight";
-const songArtist = "ZetaWave";
 
 const audio = document.getElementById("audio");
 const bar = document.getElementById("bar");
 const lrcList = document.getElementById("lrcList");
 const disc = document.getElementById("disc");
+const playBtn = document.getElementById("playBtn");
 const titleEl = document.getElementById("songTitle");
 const artistEl = document.getElementById("songArtist");
 
 let lrcLines = [];
 let currentIndex = -1;
+let isPlaying = false;
 
 audio.src = AUDIO_FILE;
-titleEl.innerText = songTitle;
-artistEl.innerText = "作曲：" + songArtist;
+titleEl.innerText = "Little Starlight";
+artistEl.innerText = "作曲：ZetaWave";
 
 // 加载歌词
 fetch(LRC_FILE)
@@ -216,14 +203,18 @@ function renderLRC() {
   });
 }
 
-// 播放/暂停 + 光盘旋转
-function playPause() {
+// 播放/暂停切换（按钮+光盘）
+function togglePlay() {
   if (audio.paused) {
     audio.play();
     disc.classList.add("playing");
+    playBtn.innerHTML = "⏸️ 暂停播放";
+    isPlaying = true;
   } else {
     audio.pause();
     disc.classList.remove("playing");
+    playBtn.innerHTML = "▶️ 开始播放";
+    isPlaying = false;
   }
 }
 
@@ -260,6 +251,13 @@ function syncLRC() {
   const offset = lrcList.clientHeight / 2 - lineHeight / 2;
   lrcList.style.transform = `translateY(-${currentIndex * lineHeight - offset}px)`;
 }
+
+// 播放结束后重置按钮
+audio.addEventListener("ended", () => {
+  disc.classList.remove("playing");
+  playBtn.innerHTML = "▶️ 开始播放";
+  isPlaying = false;
+});
 </script>
 </body>
 </html>
