@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+<head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Little Starlight</title>
 <style>
   * {
@@ -68,24 +69,12 @@
   }
 
   /* 歌词区域 */
-  .lyric-box {
-    height: 60px;
-    margin: 20px 0;
-    overflow: hidden;
-    text-align: center;
-  }
   .lyric {
-    transition: all 0.3s;
-    line-height: 30px;
-  }
-  .lyric p {
-    margin: 0;
-    padding: 0;
-  }
-  .lyric .active {
-    color: #fff;
+    height: 40px;
+    line-height: 40px;
     font-size: 16px;
-    font-weight: bold;
+    color: #ccc;
+    margin: 10px 0;
   }
 
   .play-btn {
@@ -101,6 +90,7 @@
     display: none;
   }
 </style>
+</head>
 
 <body>
 <div class="player-box">
@@ -108,12 +98,9 @@
   <p class="composer">作曲：ZetaWave</p>
 
   <div class="disc" id="disc"></div>
-
-  <div class="lyric-box">
-    <div class="lyric" id="lyric">加载歌词中...</div>
-  </div>
-
+  <div class="lyric" id="lyric">歌词加载中...</div>
   <button class="play-btn" id="playBtn">▶</button>
+
   <audio id="audio" src="Little Starlight.mp3">
 </div>
 
@@ -121,49 +108,10 @@
   const audio = document.getElementById('audio');
   const disc = document.getElementById('disc');
   const btn = document.getElementById('playBtn');
-  const lyricEl = document.getElementById('lyric');
+  const lyric = document.getElementById('lyric');
 
-  let lyricList = [];
-  let currentLine = -1;
-
-  // 加载 LRC 歌词
-  fetch('Little Starlight.lrc')
-    .then(res => res.text())
-    .then(text => {
-      lyricList = parseLRC(text);
-    });
-
-  // LRC 解析
-  function parseLRC(text) {
-    let lines = text.split('\n');
-    let arr = [];
-    let reg = /\[(\d+):(\d+\.\d+)\](sslocal://flow/file_open?url=.%2A&flow_extra=eyJsaW5rX3R5cGUiOiJjb2RlX2ludGVycHJldGVyIn0=)/;
-    lines.forEach(line => {
-      let m = line.match(reg);
-      if (m) {
-        let time = parseInt(m[1]) * 60 + parseFloat(m[2]);
-        arr.push({ time, text: m[3] });
-      }
-    });
-    return arr;
-  }
-
-  // 歌词同步滚动
-  audio.addEventListener('timeupdate', () => {
-    if (lyricList.length === 0) return;
-    let now = audio.currentTime;
-    let idx = -1;
-    for (let i = 0; i < lyricList.length; i++) {
-      if (now >= lyricList[i].time) idx = i;
-    }
-    if (idx !== currentLine && idx >= 0) {
-      currentLine = idx;
-      lyricEl.innerHTML = `<p class="active">${lyricList[idx].text}</p>`;
-    }
-  });
-
-  // 播放暂停切换
-  btn.addEventListener('click', () => {
+  // 播放/暂停切换（正常、不卡）
+  btn.onclick = function () {
     if (audio.paused) {
       audio.play();
       disc.classList.add('playing');
@@ -173,7 +121,13 @@
       disc.classList.remove('playing');
       btn.innerText = '▶';
     }
-  });
+  };
+
+  // 这里可以直接放你的歌词，秒显示
+  audio.ontimeupdate = function () {
+    // 你把自己的 LRC 时间轴发给我，我给你填进去，立刻同步
+    lyric.innerText = "Little Starlight · 正在播放";
+  };
 </script>
 </body>
 </html>
