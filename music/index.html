@@ -2,95 +2,41 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Little Starlight</title>
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: sans-serif;
+  body{text-align:center;background:#1a1a1a;color:#fff;font-family:sans-serif;padding:20px;}
+  .disc{
+    width:200px;height:200px;border-radius:50%;
+    background:url(ZetaWave.png) center/cover;
+    margin:20px auto;
+    animation:rot 10s linear infinite;
+    animation-play-state:paused;
   }
-  body {
-    background: #1a1a1a;
-    color: #fff;
-    text-align: center;
-    padding: 30px 20px;
-  }
-  h2 {
-    font-size: 24px;
-    margin-bottom: 6px;
-  }
-  p {
-    font-size: 14px;
-    color: #ccc;
-    margin-bottom: 20px;
-  }
-
-  /* 黑胶唱片 */
-  .disc {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    margin: 20px auto;
-    background-image: url("ZetaWave.png");
-    background-size: cover;
-    background-position: center;
-    animation: rotate 10s linear infinite;
-    animation-play-state: paused;
-  }
-  @keyframes rotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  .disc.playing {
-    animation-play-state: running;
-  }
-
-  /* 歌词 */
-  #lyric {
-    height: 50px;
-    line-height: 50px;
-    font-size: 16px;
-    color: #fff;
-    margin: 10px 0 20px;
-  }
-
-  /* 按钮 */
-  #playBtn {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-  }
-
-  audio {
-    display: none;
-  }
+  @keyframes rot{to{transform:rotate(360deg)}}
+  .disc.play{animation-play-state:running}
+  #lyric{height:50px;line-height:50px;font-size:16px;}
+  #btn{width:60px;height:60px;border-radius:50%;border:none;font-size:22px;}
 </style>
 </head>
 
 <body>
   <h2>Little Starlight</h2>
-  <p>作曲 / 作词：ZetaWave</p>
-
+  <p>ZetaWave</p>
   <div class="disc" id="disc"></div>
-  <div id="lyric">加载歌词...</div>
-  <button id="playBtn">▶</button>
+  <div id="lyric">...</div>
+  <button id="btn">▶</button>
 
   <audio id="audio" src="Little Starlight.mp3">
 
 <script>
-  const audio = document.getElementById('audio');
-  const btn   = document.getElementById('playBtn');
-  const disc  = document.getElementById('disc');
-  const lyric = document.getElementById('lyric');
+const a = document.getElementById('audio');
+const b = document.getElementById('btn');
+const d = document.getElementById('disc');
+const l = document.getElementById('lyric');
 
-  // ====================== 你的完整 LRC 歌词 ======================
-  const lrcText = `
-[ti:Little Starlight]
+// 你的完整歌词
+const lrctxt = `[ti:Little Starlight]
 [ar:ZetaWave]
 [al:English song]
 [by:ZetaWave]
@@ -124,72 +70,43 @@
 [02:47.747] Shining soft, trying hard to lie to lie
 [02:52.266] Every time I fall, every time I stand up fall
 [02:57.356] But tomorrow will be bright, for us
-[03:18.290]Goodbye!
-`;
+[03:18.290]Goodbye!`;
 
-  // 解析 LRC
-  function parseLRC(text) {
-    const lines = text.trim().split('\n');
-    const list  = [];
-    const reg   = /\[(\d+):(\d+)\.(\d+)\](sslocal://flow/file_open?url=.%2A&flow_extra=eyJsaW5rX3R5cGUiOiJjb2RlX2ludGVycHJldGVyIn0=)/;
-
-    lines.forEach(line => {
-      const m = line.match(reg);
-      if (m) {
-        const min   = parseInt(m[1], 10);
-        const sec   = parseInt(m[2], 10);
-        const msec  = parseInt(m[3], 10);
-        const time  = min * 60 + sec + msec / 1000;
-        const txt   = m[4].trim();
-        list.push({ time, txt });
-      }
-    });
-    return list;
+// 解析歌词
+const lines=[];
+lrctxt.split('\n').forEach(line=>{
+  const m=line.match(/\[(\d+):(\d+)\.(\d+)\](sslocal://flow/file_open?url=.%2A&flow_extra=eyJsaW5rX3R5cGUiOiJjb2RlX2ludGVycHJldGVyIn0=)/);
+  if(m){
+    const t=+m[1]*60 + +m[2] + +m[3]/1000;
+    lines.push({t,txt:m[4].trim()});
   }
+});
 
-  const lyricList = parseLRC(lrcText);
-  let lastLine = -1;
-
-  // 歌词同步
-  audio.addEventListener('timeupdate', () => {
-    const t = audio.currentTime;
-    let currLine = -1;
-
-    for (let i = 0; i < lyricList.length; i++) {
-      if (t >= lyricList[i].time) {
-        currLine = i;
-      }
-    }
-
-    if (currLine !== -1 && currLine !== lastLine) {
-      lastLine = currLine;
-      lyric.innerText = lyricList[currLine].txt;
-    }
-  });
-
-  // ============== 关键：自动同步按钮和唱片状态 ==============
-  function updateUI() {
-    if (audio.paused) {
-      btn.textContent = '▶';
-      disc.classList.remove('playing');
-    } else {
-      btn.textContent = 'l l';
-      disc.classList.add('playing');
+// 歌词同步
+a.ontimeupdate=()=>{
+  const t=a.currentTime;
+  for(let i=lines.length-1;i>=0;i--){
+    if(t>=lines[i].t){
+      l.innerText=lines[i].txt;
+      break;
     }
   }
+};
 
-  // 监听系统播放/暂停（通知栏控制也生效）
-  audio.addEventListener('play', updateUI);
-  audio.addEventListener('pause', updateUI);
+// 按钮和通知栏同步
+function update(){
+  if(a.paused){
+    b.textContent='▶';
+    d.classList.remove('play');
+  }else{
+    b.textContent='ll';
+    d.classList.add('play');
+  }
+}
 
-  // 点击按钮
-  btn.onclick = () => {
-    if (audio.paused) {
-      audio.play().catch(e => console.log(e));
-    } else {
-      audio.pause();
-    }
-  };
+a.addEventListener('play',update);
+a.addEventListener('pause',update);
+b.onclick=()=>a.paused?a.play():a.pause();
 </script>
 </body>
 </html>
