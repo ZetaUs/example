@@ -118,7 +118,7 @@
             font-weight: 400;
         }
         
-        /* 歌词区域 - 缩小高度 */
+        /* 歌词区域 */
         .lyrics-container {
             width: 100%;
             height: 150px;
@@ -376,7 +376,7 @@
             </div>
             
             <!-- 歌词状态提示 -->
-            <div class="lyrics-status" id="lyricsStatus">正在加载歌词...</div>
+            <div class="lyrics-status" id="lyricsStatus">歌词已嵌入</div>
         </div>
         
         <!-- 音乐文件状态 -->
@@ -406,113 +406,40 @@
             // 尝试加载音乐文件
             audio.src = 'Little Starlight.mp3';
             
-            // 歌词数据
-            let lyrics = [];
+            // 歌词数据 - 直接嵌入从LRC文件解析的内容
+            const lyrics = [
+                { time: 0, text: "Little Starlight - ZetaWave" },
+                { time: 2, text: "write words for a song: ZetaWave" },
+                { time: 3, text: "write music: ZetaWave" },
+                { time: 5.439, text: "The wind blows softly past the window pane" },
+                { time: 10.444, text: "I write my heart out into a simple refrain" },
+                { time: 16.525, text: "Ordinary days still have their warmth" },
+                { time: 22.971, text: "I take my time, walk through every storm" },
+                { time: 32.673, text: "Melodies repeat inside my head" },
+                { time: 37.358, text: "Dreams are living where my heart has led" },
+                { time: 43.388, text: "Even when the rain and wind collide" },
+                { time: 49.926, text: "I hold on tight to courage deep inside" },
+                { time: 57.243, text: "I'm a little starlight in the night" },
+                { time: 62.639, text: "Every time I fall, I stand up tall" },
+                { time: 74.165, text: "Believe tomorrow will be bright for all" },
+                { time: 87.929, text: "The same old songs play inside my ears" },
+                { time: 92.653, text: "Young hopes live on through all the years" },
+                { time: 98.318, text: "Even if the road ahead is unclear" },
+                { time: 104.322, text: "I keep on going, chasing what I hold dear" },
+                { time: 112.164, text: "I'm a little starlight in the night" },
+                { time: 117.565, text: "Shining soft, but trying hard to light" },
+                { time: 124.262, text: "Every time I fall, I stand up tall" },
+                { time: 127.289, text: "Believe tomorrow will be bright for all" },
+                { time: 134.301, text: "Moving forward, no matter how far the road" },
+                { time: 153.665, text: "With love in my heart, light in my soul" },
+                { time: 160.132, text: "I'm a little starlight in the night" },
+                { time: 167.747, text: "Shining soft, trying hard to lie to lie" },
+                { time: 172.266, text: "Every time I fall, every time I stand up fall" },
+                { time: 177.356, text: "But tomorrow will be bright, for us" },
+                { time: 198.290, text: "Goodbye!" }
+            ];
+            
             let currentLyricIndex = 0;
-            
-            // 解析LRC歌词文件格式
-            function parseLRC(lrcText) {
-                const lines = lrcText.split('\n');
-                const parsedLyrics = [];
-                
-                for (const line of lines) {
-                    // 匹配时间标签 [mm:ss.xx] 或 [mm:ss]
-                    const timeMatches = line.match(/\[(\d+):(\d+)(?:\.(\d+))?\]/g);
-                    
-                    if (timeMatches) {
-                        // 获取歌词文本（移除所有时间标签）
-                        let lyricText = line;
-                        for (const match of timeMatches) {
-                            lyricText = lyricText.replace(match, '');
-                        }
-                        lyricText = lyricText.trim();
-                        
-                        if (lyricText === '') continue;
-                        
-                        // 为每个时间标签创建歌词条目
-                        for (const timeMatch of timeMatches) {
-                            const timeParts = timeMatch.match(/\[(\d+):(\d+)(?:\.(\d+))?\]/);
-                            if (timeParts) {
-                                const minutes = parseInt(timeParts[1]);
-                                const seconds = parseInt(timeParts[2]);
-                                const milliseconds = timeParts[3] ? parseInt(timeParts[3]) : 0;
-                                
-                                const totalTime = minutes * 60 + seconds + (milliseconds / 100);
-                                
-                                parsedLyrics.push({
-                                    time: totalTime,
-                                    text: lyricText
-                                });
-                            }
-                        }
-                    }
-                }
-                
-                // 按时间排序
-                parsedLyrics.sort((a, b) => a.time - b.time);
-                
-                return parsedLyrics;
-            }
-            
-            // 从文件加载LRC歌词
-            async function loadLRCFromFile() {
-                try {
-                    fileStatus.textContent = "正在加载歌词文件...";
-                    fileStatus.classList.add('loading');
-                    
-                    const response = await fetch('Little Starlight.lrc');
-                    
-                    if (!response.ok) {
-                        throw new Error(`歌词文件加载失败: ${response.status}`);
-                    }
-                    
-                    const lrcText = await response.text();
-                    lyrics = parseLRC(lrcText);
-                    
-                    if (lyrics.length === 0) {
-                        throw new Error('LRC文件格式错误或没有找到歌词');
-                    }
-                    
-                    fileStatus.textContent = "音乐和歌词文件加载成功！";
-                    fileStatus.classList.remove('loading');
-                    fileStatus.classList.add('success');
-                    
-                    lyricsStatus.textContent = `已加载 ${lyrics.length} 行歌词`;
-                    initLyrics();
-                    
-                } catch (error) {
-                    console.warn('无法加载LRC文件，使用示例歌词:', error);
-                    lyricsStatus.textContent = "LRC文件加载失败，使用示例歌词";
-                    
-                    // 如果LRC文件不存在，使用示例歌词
-                    lyrics = [
-                        { time: 0, text: "[音乐前奏]" },
-                        { time: 5, text: "在夜空之下" },
-                        { time: 10, text: "小小的星光闪烁" },
-                        { time: 15, text: "照亮了黑暗" },
-                        { time: 20, text: "指引着前行的方向" },
-                        { time: 25, text: "梦想的翅膀" },
-                        { time: 30, text: "在风中轻轻摆动" },
-                        { time: 35, text: "追寻着远方" },
-                        { time: 40, text: "那片未知的天空" },
-                        { time: 45, text: "每颗星星都有故事" },
-                        { time: 50, text: "每道光都有希望" },
-                        { time: 55, text: "在寂静的夜晚" },
-                        { time: 60, text: "我听见了你的呼唤" },
-                        { time: 65, text: "Little starlight" },
-                        { time: 70, text: "闪耀在银河之中" },
-                        { time: 75, text: "照亮我的心" },
-                        { time: 80, text: "温暖了这个夜晚" },
-                        { time: 85, text: "Little starlight" },
-                        { time: 90, text: "永不熄灭的光芒" },
-                        { time: 95, text: "伴随着我" },
-                        { time: 100, text: "走向明天的梦想" }
-                    ];
-                    
-                    lyricsStatus.textContent = "LRC文件未找到，使用内置示例歌词";
-                    initLyrics();
-                }
-            }
             
             // 初始化歌词显示
             function initLyrics() {
@@ -545,6 +472,7 @@
                 }
                 
                 updateLyricsDisplay(0);
+                lyricsStatus.textContent = `已加载 ${lyrics.length} 行歌词`;
             }
             
             // 更新歌词显示
@@ -593,12 +521,70 @@
                 fileStatus.textContent = "音乐文件加载成功！";
                 fileStatus.classList.add('success');
                 updateDuration();
-                // 加载歌词文件
-                loadLRCFromFile();
+                // 初始化歌词显示
+                initLyrics();
             });
             
             audio.addEventListener('error', function(e) {
                 fileStatus.textContent = "错误：无法加载音乐文件。请确保文件 'Little Starlight.mp3' 在同一目录下。";
                 fileStatus.classList.add('error');
                 playPauseBtn.disabled = true;
+                lyricsStatus.textContent = "音乐文件未找到，歌词无法同步";
+            });
             
+            // 播放/暂停功能
+            let isPlaying = false;
+            
+            playPauseBtn.addEventListener('click', function() {
+                if (isPlaying) {
+                    // 如果正在播放，则暂停
+                    audio.pause();
+                    record.classList.remove('playing');
+                    playPauseBtn.innerHTML = '▶';
+                    playState.textContent = '已暂停';
+                    isPlaying = false;
+                } else {
+                    // 如果暂停中，则播放
+                    audio.play();
+                    record.classList.add('playing');
+                    playPauseBtn.innerHTML = '||';
+                    playState.textContent = '播放中...';
+                    isPlaying = true;
+                }
+            });
+            
+            // 更新进度条和歌词
+            audio.addEventListener('timeupdate', function() {
+                const currentTime = audio.currentTime;
+                const duration = audio.duration;
+                
+                // 更新进度条宽度
+                const progressPercent = (currentTime / duration) * 100;
+                progress.style.width = `${progressPercent}%`;
+                
+                // 更新时间显示
+                currentTimeEl.textContent = formatTime(currentTime);
+                
+                // 更新歌词显示
+                updateLyricsDisplay(currentTime);
+                
+                // 如果音乐结束，重置状态
+                if (currentTime >= duration) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    record.classList.remove('playing');
+                    playPauseBtn.innerHTML = '▶';
+                    playState.textContent = '播放结束';
+                    isPlaying = false;
+                    updateLyricsDisplay(0);
+                }
+            });
+            
+            // 点击进度条跳转
+            progressBar.addEventListener('click', function(e) {
+                const rect = progressBar.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const width = rect.width;
+                const clickPercent = clickX / width;
+                
+                const newTime = c
