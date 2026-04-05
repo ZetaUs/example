@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Little Starlight 音乐播放器</title>
+    <title>Little Starlight 音乐播放器 - 极速版</title>
     <style>
         * {
             margin: 0;
@@ -24,28 +24,30 @@
         
         .player-container {
             width: 100%;
-            max-width: 500px;
+            max-width: 400px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
         
+        /* 灰色方块播放器 */
         .player {
             background-color: #2d2d2d;
-            border-radius: 24px;
-            padding: 30px 25px;
+            border-radius: 20px;
+            padding: 25px 20px;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
             border: 1px solid #3a3a3a;
         }
         
+        /* 唱片样式 */
         .record-container {
             position: relative;
-            width: 160px;
-            height: 160px;
+            width: 140px;
+            height: 140px;
             margin-bottom: 20px;
         }
         
@@ -54,13 +56,14 @@
             height: 100%;
             border-radius: 50%;
             background-color: #000;
-            border: 6px solid #ffffff;
+            border: 5px solid #ffffff;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
             transition: transform 0.8s ease;
         }
         
+        /* 唱片动画 - 旋转 */
         .record.playing {
             animation: rotate 10s linear infinite;
         }
@@ -75,32 +78,22 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             background-color: #ffffff;
             border-radius: 50%;
             z-index: 2;
         }
         
-        .record-lines {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: 
-                radial-gradient(circle at center, transparent 30%, #333 30.5%, transparent 31%),
-                radial-gradient(circle at center, transparent 40%, #333 40.5%, transparent 41%),
-                radial-gradient(circle at center, transparent 50%, #333 50.5%, transparent 51%);
-        }
-        
+        /* 歌曲信息 */
         .song-info {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             width: 100%;
         }
         
         .song-title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             margin-bottom: 6px;
             letter-spacing: 0.5px;
@@ -108,20 +101,21 @@
         }
         
         .song-author {
-            font-size: 14px;
+            font-size: 13px;
             color: #aaa;
             font-weight: 400;
         }
         
+        /* 歌词区域 - 更紧凑 */
         .lyrics-container {
             width: 100%;
-            height: 150px;
+            height: 120px;
             overflow: hidden;
             position: relative;
             background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
+            border-radius: 10px;
             margin-bottom: 15px;
-            padding: 10px;
+            padding: 8px;
         }
         
         .lyrics-mask {
@@ -129,17 +123,17 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 30px;
+            height: 25px;
             background: linear-gradient(to bottom, rgba(45, 45, 45, 0.9), transparent);
             z-index: 2;
-            border-radius: 12px 12px 0 0;
+            border-radius: 10px 10px 0 0;
         }
         
         .lyrics-mask.bottom {
             top: auto;
             bottom: 0;
             background: linear-gradient(to top, rgba(45, 45, 45, 0.9), transparent);
-            border-radius: 0 0 12px 12px;
+            border-radius: 0 0 10px 10px;
         }
         
         .lyrics-content {
@@ -148,62 +142,57 @@
             transform: translateY(-50%);
             width: 100%;
             transition: top 0.5s ease;
-            padding: 0 10px;
+            padding: 0 8px;
         }
         
         .lyric-line {
-            font-size: 16px;
-            line-height: 1.6;
+            font-size: 14px;
+            line-height: 1.5;
             text-align: center;
             color: #888;
-            margin: 5px 0;
-            padding: 6px 10px;
-            border-radius: 6px;
+            margin: 4px 0;
+            padding: 5px 8px;
+            border-radius: 5px;
             transition: all 0.3s ease;
             opacity: 0.6;
         }
         
         .lyric-line.current {
             color: #ffffff;
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 600;
             opacity: 1;
             background-color: rgba(52, 152, 219, 0.15);
-            text-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
         }
         
-        .lyric-line.past {
-            color: #bbb;
-            opacity: 0.8;
-        }
-        
+        /* 播放状态指示器 */
         .play-state {
             margin: 5px 0 15px 0;
-            font-size: 14px;
+            font-size: 12px;
             color: #3498db;
             font-weight: 500;
         }
         
+        /* 控制按钮 */
         .controls {
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .control-btn {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background-color: #3498db;
             border: none;
             color: white;
-            font-size: 28px;
+            font-size: 24px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
         
         .control-btn:hover {
@@ -215,12 +204,7 @@
             transform: scale(0.98);
         }
         
-        .control-btn:disabled {
-            background-color: #2c3e50;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
+        /* 进度条 */
         .progress-container {
             width: 100%;
         }
@@ -229,13 +213,13 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 8px;
-            font-size: 14px;
+            font-size: 12px;
             color: #aaa;
         }
         
         .progress-bar {
             width: 100%;
-            height: 6px;
+            height: 5px;
             background-color: #444;
             border-radius: 3px;
             overflow: hidden;
@@ -250,97 +234,13 @@
             transition: width 0.1s linear;
         }
         
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-            border-radius: 24px;
-        }
-        
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #3498db;
-            animation: spin 1s ease-in-out infinite;
-            margin-bottom: 15px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .loading-text {
-            color: #3498db;
-            font-size: 16px;
-            text-align: center;
-        }
-        
-        .loading-progress {
-            width: 80%;
-            height: 4px;
-            background-color: #444;
-            border-radius: 2px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-        
-        .loading-progress-bar {
-            height: 100%;
-            background-color: #3498db;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        
-        @media (max-width: 480px) {
-            .player {
-                padding: 25px 20px;
-                border-radius: 20px;
-            }
-            
-            .record-container {
-                width: 140px;
-                height: 140px;
-            }
-            
-            .song-title {
-                font-size: 22px;
-            }
-            
-            .control-btn {
-                width: 60px;
-                height: 60px;
-                font-size: 24px;
-            }
-            
-            .lyrics-container {
-                height: 140px;
-            }
-            
-            .lyric-line {
-                font-size: 15px;
-            }
-            
-            .lyric-line.current {
-                font-size: 16px;
-            }
-        }
-        
+        /* 音乐文件状态提示 */
         .file-status {
-            margin-top: 20px;
-            padding: 10px 15px;
+            margin-top: 15px;
+            padding: 8px 12px;
             background-color: #1a1a1a;
-            border-radius: 8px;
-            font-size: 14px;
+            border-radius: 6px;
+            font-size: 12px;
             text-align: center;
             color: #aaa;
             max-width: 100%;
@@ -348,51 +248,51 @@
         
         .file-status.error {
             color: #e74c3c;
-            background-color: rgba(231, 76, 60, 0.1);
         }
         
         .file-status.success {
             color: #2ecc71;
-            background-color: rgba(46, 204, 113, 0.1);
         }
         
-        .file-status.loading {
-            color: #3498db;
-            background-color: rgba(52, 152, 219, 0.1);
+        /* 快速启动选项 */
+        .quick-start {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #252525;
+            border-radius: 8px;
+            width: 100%;
         }
         
-        .lyrics-status {
-            margin-top: 10px;
+        .quick-start h3 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #ddd;
+        }
+        
+        .quick-start button {
+            padding: 8px 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
             font-size: 12px;
-            color: #777;
-            text-align: center;
+            margin: 5px 0;
+            width: 100%;
         }
         
-        .debug-info {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #666;
-            text-align: center;
+        .quick-start button:hover {
+            background-color: #2980b9;
         }
     </style>
 </head>
 <body>
     <div class="player-container">
-        <div class="player" id="player">
-            <!-- 加载覆盖层 -->
-            <div class="loading-overlay" id="loadingOverlay">
-                <div class="loading-spinner"></div>
-                <div class="loading-text" id="loadingText">正在预加载音乐...</div>
-                <div class="loading-progress">
-                    <div class="loading-progress-bar" id="loadingProgress"></div>
-                </div>
-            </div>
-            
+        <div class="player">
             <!-- 唱片 -->
             <div class="record-container">
                 <div class="record" id="record">
                     <div class="record-center"></div>
-                    <div class="record-lines"></div>
                 </div>
             </div>
             
@@ -412,11 +312,11 @@
             </div>
             
             <!-- 播放状态指示器 -->
-            <div class="play-state" id="playState">准备播放</div>
+            <div class="play-state" id="playState">点击播放按钮开始</div>
             
             <!-- 控制按钮 -->
             <div class="controls">
-                <button class="control-btn" id="playPauseBtn" disabled>▶</button>
+                <button class="control-btn" id="playPauseBtn">▶</button>
             </div>
             
             <!-- 进度条 -->
@@ -429,17 +329,18 @@
                     <div class="progress" id="progress"></div>
                 </div>
             </div>
-            
-            <!-- 歌词状态提示 -->
-            <div class="lyrics-status" id="lyricsStatus">歌词已嵌入</div>
-            
-            <!-- 调试信息 -->
-            <div class="debug-info" id="debugInfo">加载状态: 初始化中...</div>
         </div>
         
         <!-- 音乐文件状态 -->
         <div class="file-status" id="fileStatus">
-            正在优化加载音乐文件...
+            点击播放按钮开始播放音乐
+        </div>
+        
+        <!-- 快速启动选项 -->
+        <div class="quick-start">
+            <h3>快速启动选项</h3>
+            <button id="testTone">播放测试音（无需文件）</button>
+            <button id="loadLocal">加载本地音乐文件</button>
         </div>
     </div>
 
@@ -456,20 +357,17 @@
             const playState = document.getElementById('playState');
             const lyricsContent = document.getElementById('lyricsContent');
             const lyricsContainer = document.getElementById('lyricsContainer');
-            const lyricsStatus = document.getElementById('lyricsStatus');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            const loadingText = document.getElementById('loadingText');
-            const loadingProgress = document.getElementById('loadingProgress');
-            const debugInfo = document.getElementById('debugInfo');
-            const player = document.getElementById('player');
+            const testToneBtn = document.getElementById('testToneBtn');
+            const loadLocalBtn = document.getElementById('loadLocalBtn');
             
             // 创建音频元素
             const audio = new Audio();
             
-            // 设置预加载属性
-            audio.preload = 'auto';
+            // 使用更小的音频文件或生成测试音频
+            let useTestAudio = false;
+            let testAudioContext = null;
             
-            // 歌词数据 - 直接嵌入
+            // 歌词数据
             const lyrics = [
                 { time: 0, text: "Little Starlight - ZetaWave" },
                 { time: 2, text: "write words for a song: ZetaWave" },
@@ -488,43 +386,21 @@
                 { time: 87.929, text: "The same old songs play inside my ears" },
                 { time: 92.653, text: "Young hopes live on through all the years" },
                 { time: 98.318, text: "Even if the road ahead is unclear" },
-                { time: 104.322, text: "I keep on going, chasing what I hold dear" },
-                { time: 112.164, text: "I'm a little starlight in the night" },
-                { time: 117.565, text: "Shining soft, but trying hard to light" },
-                { time: 124.262, text: "Every time I fall, I stand up tall" },
-                { time: 127.289, text: "Believe tomorrow will be bright for all" },
-                { time: 134.301, text: "Moving forward, no matter how far the road" },
-                { time: 153.665, text: "With love in my heart, light in my soul" },
-                { time: 160.132, text: "I'm a little starlight in the night" },
-                { time: 167.747, text: "Shining soft, trying hard to lie to lie" },
-                { time: 172.266, text: "Every time I fall, every time I stand up fall" },
-                { time: 177.356, text: "But tomorrow will be bright, for us" },
-                { time: 198.290, text: "Goodbye!" }
+                { time: 104.322, text: "I keep on going, chasing what I hold dear" }
             ];
             
             let currentLyricIndex = 0;
             let isPlaying = false;
-            let startTime = Date.now();
             
-            // 更新调试信息
-            function updateDebugInfo(message) {
-                debugInfo.textContent = `加载状态: ${message} (耗时: ${Date.now() - startTime}ms)`;
-                console.log(`[Debug] ${message} (耗时: ${Date.now() - startTime}ms)`);
-            }
-            
-            // 更新加载进度
-            function updateLoadingProgress(percent, message) {
-                loadingProgress.style.width = `${percent}%`;
-                loadingText.textContent = message;
-            }
+            // 立即初始化歌词
+            initLyrics();
             
             // 初始化歌词显示
             function initLyrics() {
-                updateDebugInfo("初始化歌词显示");
                 lyricsContent.innerHTML = '';
                 
                 // 添加占位行
-                for (let i = 0; i < 3; i++) {
+                for (let i = 0; i < 2; i++) {
                     const emptyLine = document.createElement('div');
                     emptyLine.className = 'lyric-line';
                     emptyLine.textContent = '';
@@ -542,16 +418,85 @@
                 });
                 
                 // 添加更多占位行
-                for (let i = 0; i < 3; i++) {
+                for (let i = 0; i < 2; i++) {
                     const emptyLine = document.createElement('div');
                     emptyLine.className = 'lyric-line';
                     emptyLine.textContent = '';
                     lyricsContent.appendChild(emptyLine);
                 }
-                
-                updateLyricsDisplay(0);
-                lyricsStatus.textContent = `已加载 ${lyrics.length} 行歌词`;
             }
+            
+            // 创建测试音频
+            function createTestAudio() {
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContext) {
+                        throw new Error("浏览器不支持Web Audio API");
+                    }
+                    
+                    testAudioContext = new AudioContext();
+                    const oscillator = testAudioContext.createOscillator();
+                    const gainNode = testAudioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(testAudioContext.destination);
+                    
+                    oscillator.frequency.value = 440; // A4
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.3, testAudioContext.currentTime);
+                    
+                    // 创建一个音频缓冲区
+                    const duration = 30; // 30秒测试音频
+                    const sampleRate = testAudioContext.sampleRate;
+                    const frameCount = sampleRate * duration;
+                    const audioBuffer = testAudioContext.createBuffer(2, frameCount, sampleRate);
+                    
+                    // 生成正弦波
+                    for (let channel = 0; channel < 2; channel++) {
+                        const nowBuffering = audioBuffer.getChannelData(channel);
+                        for (let i = 0; i < frameCount; i++) {
+                            nowBuffering[i] = Math.sin(2 * Math.PI * 440 * i / sampleRate) * 0.3;
+                        }
+                    }
+                    
+                    return audioBuffer;
+                } catch (error) {
+                    console.error("创建测试音频失败:", error);
+                    return null;
+                }
+            }
+            
+            // 播放/暂停功能
+            playPauseBtn.addEventListener('click', function() {
+                if (isPlaying) {
+                    // 如果正在播放，则暂停
+                    audio.pause();
+                    record.classList.remove('playing');
+                    playPauseBtn.innerHTML = '▶';
+                    playState.textContent = '已暂停';
+                    isPlaying = false;
+                } else {
+                    // 如果暂停中，则播放
+                    try {
+                        audio.play().then(() => {
+                            record.classList.add('playing');
+                            playPauseBtn.innerHTML = '||';
+                            playState.textContent = '播放中...';
+                            isPlaying = true;
+                            fileStatus.textContent = "音乐播放中";
+                            fileStatus.className = "file-status success";
+                        }).catch(error => {
+                            console.error("播放失败:", error);
+                            playState.textContent = '播放失败';
+                            fileStatus.textContent = "播放失败: " + error.message;
+                            fileStatus.className = "file-status error";
+                        });
+                    } catch (error) {
+                        console.error("播放错误:", error);
+                    }
+                }
+            });
             
             // 更新歌词显示
             function updateLyricsDisplay(currentTime) {
@@ -569,14 +514,13 @@
                     const prevLine = document.getElementById(`lyric-${currentLyricIndex}`);
                     if (prevLine) {
                         prevLine.classList.remove('current');
-                        prevLine.classList.add('past');
                     }
                     
                     const currentLine = document.getElementById(`lyric-${newIndex}`);
                     if (currentLine) {
-                        currentLine.classList.remove('past');
                         currentLine.classList.add('current');
                         
+                        // 滚动到当前歌词
                         const lineHeight = currentLine.offsetHeight;
                         const containerHeight = lyricsContainer.clientHeight;
                         const lineTop = currentLine.offsetTop;
@@ -589,10 +533,45 @@
                 }
             }
             
-            // 优化音乐加载
-            function optimizeAudioLoad() {
-                updateDebugInfo("开始优化音乐加载");
-                updateLoadingProgress(10, "准备加载音频...");
+            // 更新进度条和歌词
+            audio.addEventListener('timeupdate', function() {
+                const currentTime = audio.currentTime;
+                const duration = audio.duration;
                 
-                // 尝试多个可能的文件路径
-                con
+                if (!isNaN(duration)) {
+                    const progressPercent = (currentTime / duration) * 100;
+                    progress.style.width = `${progressPercent}%`;
+                    durationEl.textContent = formatTime(duration);
+                }
+                
+                currentTimeEl.textContent = formatTime(currentTime);
+                updateLyricsDisplay(currentTime);
+                
+                if (currentTime >= audio.duration) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    record.classList.remove('playing');
+                    playPauseBtn.innerHTML = '▶';
+                    playState.textContent = '播放结束';
+                    isPlaying = false;
+                }
+            });
+            
+            // 点击进度条跳转
+            progressBar.addEventListener('click', function(e) {
+                if (audio.duration && !isNaN(audio.duration)) {
+                    const rect = progressBar.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left;
+                    const width = rect.width;
+                    const clickPercent = clickX / width;
+                    
+                    const newTime = clickPercent * audio.duration;
+                    audio.currentTime = newTime;
+                    updateLyricsDisplay(newTime);
+                    
+                    if (!isPlaying) {
+                        audio.play().then(() => {
+                            record.classList.add('playing');
+                            playPauseBtn.innerHTML = '||';
+                            playState.textContent = '播放中...';
+                            isP
