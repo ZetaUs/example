@@ -68,13 +68,13 @@
     100% { transform: rotate(360deg); }
   }
 
-  /* 歌词区域 */
   .lyric {
-    height: 40px;
-    line-height: 40px;
+    height: 50px;
+    line-height: 50px;
     font-size: 16px;
-    color: #ccc;
+    color: #fff;
     margin: 10px 0;
+    white-space: pre-wrap;
   }
 
   .play-btn {
@@ -98,7 +98,7 @@
   <p class="composer">作曲：ZetaWave</p>
 
   <div class="disc" id="disc"></div>
-  <div class="lyric" id="lyric">歌词加载中...</div>
+  <div class="lyric" id="lyric">加载歌词...</div>
   <button class="play-btn" id="playBtn">▶</button>
 
   <audio id="audio" src="Little Starlight.mp3">
@@ -110,24 +110,75 @@
   const btn = document.getElementById('playBtn');
   const lyric = document.getElementById('lyric');
 
-  // 播放/暂停切换（正常、不卡）
-  btn.onclick = function () {
+  // ======================================
+  // 这里放你的 LRC 歌词，我先给你示例格式
+  // ======================================
+  const lrcText = `
+[00:00.00] Little Starlight
+[00:05.00] 作曲：ZetaWave
+[00:10.00] 一闪一闪小星星
+[00:15.00] 挂在天空放光明
+[00:20.00] 好像许多小眼睛
+[00:25.00] 一直闪亮到天明
+`;
+
+  // 解析 LRC
+  function parseLRC(text) {
+    const lines = text.trim().split('\n');
+    const arr = [];
+    const reg = /\[(\d+):(\d+\.\d+)\](sslocal://flow/file_open?url=.%2A&flow_extra=eyJsaW5rX3R5cGUiOiJjb2RlX2ludGVycHJldGVyIn0=)/;
+    lines.forEach(line => {
+      const m = line.match(reg);
+      if (m) {
+        const min = parseInt(m[1]);
+        const sec = parseFloat(m[2]);
+        const time = min * 60 + sec;
+        arr.push({ time, text: m[3].trim() });
+      }
+    });
+    return arr;
+  }
+
+  const lyricList = parseLRC(lrcText);
+  let lastLine = -1;
+
+  // 歌词同步
+  audio.addEventListener('timeupdate', () => {
+    const t = audio.currentTime;
+    let line = -1;
+    for (let i = 0; i < lyricList.length; i++) {
+      if (t >= lyricList[i].time) line = i;
+    }
+    if (line !== -1 && line !== lastLine) {
+      lastLine = line;
+      lyric.innerText = lyricList[line].text;
+    }
+  });
+
+  // ======================================
+  // 关键：自动同步按钮状态（解决通知栏问题）
+  // ======================================
+  function updateBtnIcon() {
+    if (audio.paused) {
+      btn.innerText = '▶';
+      disc.classList.remove('playing');
+    } else {
+      btn.innerText = 'l l';
+      disc.classList.add('playing');
+    }
+  }
+
+  audio.addEventListener('play', updateBtnIcon);
+  audio.addEventListener('pause', updateBtnIcon);
+
+  // 点击按钮
+  btn.addEventListener('click', () => {
     if (audio.paused) {
       audio.play();
-      disc.classList.add('playing');
-      btn.innerText = 'l l';
     } else {
       audio.pause();
-      disc.classList.remove('playing');
-      btn.innerText = '▶';
     }
-  };
-
-  // 这里可以直接放你的歌词，秒显示
-  audio.ontimeupdate = function () {
-    // 你把自己的 LRC 时间轴发给我，我给你填进去，立刻同步
-    lyric.innerText = "Little Starlight · 正在播放";
-  };
+  });
 </script>
 </body>
 </html>
