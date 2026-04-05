@@ -5,38 +5,63 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Little Starlight</title>
 <style>
-  body{text-align:center;background:#1a1a1a;color:#fff;font-family:sans-serif;padding:20px;}
-  .disc{
-    width:200px;height:200px;border-radius:50%;
-    background:url(ZetaWave.png) center/cover;
-    margin:20px auto;
-    animation:rot 10s linear infinite;
-    animation-play-state:paused;
+  body {
+    background: #111;
+    color: #fff;
+    text-align: center;
+    font-family: sans-serif;
+    padding: 30px;
   }
-  @keyframes rot{to{transform:rotate(360deg)}}
-  .disc.play{animation-play-state:running}
-  #lyric{height:50px;line-height:50px;font-size:16px;}
-  #btn{width:60px;height:60px;border-radius:50%;border:none;font-size:22px;}
+  /* 圆盘封面（保留！） */
+  .disc {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: #333;
+    background-image: url('ZetaWave.png');
+    background-size: cover;
+    background-position: center;
+    margin: 20px auto;
+  }
+  .disc.playing {
+    animation: rot 10s linear infinite;
+  }
+  @keyframes rot {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  #lyric {
+    height: 50px;
+    line-height: 50px;
+    font-size: 16px;
+  }
+  #btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    font-size: 26px;
+  }
 </style>
 </head>
 
 <body>
   <h2>Little Starlight</h2>
   <p>ZetaWave</p>
+
   <div class="disc" id="disc"></div>
-  <div id="lyric">...</div>
+  <div id="lyric">歌词加载中...</div>
   <button id="btn">▶</button>
 
   <audio id="audio" src="Little Starlight.mp3">
 
 <script>
-const a = document.getElementById('audio');
-const b = document.getElementById('btn');
-const d = document.getElementById('disc');
-const l = document.getElementById('lyric');
+const audio = document.getElementById('audio');
+const btn   = document.getElementById('btn');
+const disc  = document.getElementById('disc');
+const lyric = document.getElementById('lyric');
 
 // 你的完整歌词
-const lrctxt = `[ti:Little Starlight]
+const lrcText = `[ti:Little Starlight]
 [ar:ZetaWave]
 [al:English song]
 [by:ZetaWave]
@@ -73,40 +98,48 @@ const lrctxt = `[ti:Little Starlight]
 [03:18.290]Goodbye!`;
 
 // 解析歌词
-const lines=[];
-lrctxt.split('\n').forEach(line=>{
-  const m=line.match(/\[(\d+):(\d+)\.(\d+)\](sslocal://flow/file_open?url=.%2A&flow_extra=eyJsaW5rX3R5cGUiOiJjb2RlX2ludGVycHJldGVyIn0=)/);
-  if(m){
-    const t=+m[1]*60 + +m[2] + +m[3]/1000;
-    lines.push({t,txt:m[4].trim()});
+const lines = [];
+lrcText.split('\n').forEach(line => {
+  const m = line.match(/\[(\d+):(\d+)\.(\d+)\](sslocal://flow/file_open?url=.%2A&flow_extra=eyJsaW5rX3R5cGUiOiJjb2RlX2ludGVycHJldGVyIn0=)/);
+  if (m) {
+    const t = +m[1]*60 + +m[2] + +m[3]/1000;
+    lines.push({ t, txt: m[4].trim() });
   }
 });
 
 // 歌词同步
-a.ontimeupdate=()=>{
-  const t=a.currentTime;
-  for(let i=lines.length-1;i>=0;i--){
-    if(t>=lines[i].t){
-      l.innerText=lines[i].txt;
+audio.ontimeupdate = () => {
+  const t = audio.currentTime;
+  for (let i = lines.length - 1; i >= 0; i--) {
+    if (t >= lines[i].t) {
+      lyric.textContent = lines[i].txt;
       break;
     }
   }
 };
 
-// 按钮和通知栏同步
-function update(){
-  if(a.paused){
-    b.textContent='▶';
-    d.classList.remove('play');
-  }else{
-    b.textContent='ll';
-    d.classList.add('play');
+// 按钮 + 圆盘 同步
+function updateUI() {
+  if (audio.paused) {
+    btn.textContent = "▶";
+    disc.classList.remove("playing");
+  } else {
+    btn.textContent = "ll";
+    disc.classList.add("playing");
   }
 }
 
-a.addEventListener('play',update);
-a.addEventListener('pause',update);
-b.onclick=()=>a.paused?a.play():a.pause();
+audio.addEventListener("play", updateUI);
+audio.addEventListener("pause", updateUI);
+
+// 点击按钮
+btn.onclick = () => {
+  if (audio.paused) {
+    audio.play().catch(err => console.log(err));
+  } else {
+    audio.pause();
+  }
+};
 </script>
 </body>
 </html>
